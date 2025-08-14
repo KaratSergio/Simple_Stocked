@@ -1,4 +1,4 @@
-import { r2 } from '@/lib/r2';
+import { r2 } from '@/server/config/r2.config';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 
 export async function POST(req: Request) {

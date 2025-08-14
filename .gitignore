@@ -50,3 +50,7 @@ redis-dump/
 
 # Neon/Postgres local backups
 pg-backups/
+
+# Notepad
+README.note.md
+README.md

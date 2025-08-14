@@ -1,4 +1,4 @@
-import { redis } from '@/lib/redis';
+import { redis } from '@/server/config/redis.config';
 
 export async function GET() {
   await redis.set('hello', 'world', { ex: 60 });
