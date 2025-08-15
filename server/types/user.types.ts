@@ -15,3 +15,8 @@ export interface UserResponse {
     name: string;
     created_at: string;
 }
+
+export interface UserWithTokens extends UserResponse {
+    accessToken: string;
+    refreshToken: string;
+}
