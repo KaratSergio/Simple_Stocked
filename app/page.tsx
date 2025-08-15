@@ -1,10 +1,5 @@
-import RegisterForm from "./components/RegisterForm";
+import AuthForm from "./components/AuthForm";
 
-export default function HomePage() {
-  return <div>
-
-    <h1>Hello from Next.js Fullstack Template 🚀</h1>
-
-    <RegisterForm />
-  </div>;
+export default function MainPage() {
+  return <AuthForm />
 }
