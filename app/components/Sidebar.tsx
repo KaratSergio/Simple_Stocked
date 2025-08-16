@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import LogoutButton from './LogoutBtn';
+import LogoutButton from './auth/LogoutBtn';
 
 const menu = [
     { key: 'dashboard', label: 'Dashboard', href: '/private/dashboard' },

@@ -1,8 +1,8 @@
 -- users table
 CREATE TABLE IF NOT EXISTS users (
-id SERIAL PRIMARY KEY,
-email TEXT UNIQUE NOT NULL,
-name TEXT NOT NULL,
-password_hash TEXT NOT NULL,
-created_at TIMESTAMP DEFAULT NOW()
+    id SERIAL PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
 );

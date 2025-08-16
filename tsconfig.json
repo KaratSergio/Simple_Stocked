@@ -28,6 +28,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "server/data/migrate.ts"],
+    "server/data/sql/migrate.ts"],
   "exclude": ["node_modules"]
 }

@@ -4,6 +4,7 @@ import { query } from '@/server/config/db.config';
 
 async function runMigration(file: string) {
   const sql = fs.readFileSync(file, 'utf-8');
+  // console.log(sql);
   await query(sql);
 
   console.log(`✅ Migration ${path.basename(file)} applied`);
