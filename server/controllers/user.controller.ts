@@ -1,5 +1,5 @@
 import { registerUser, loginUser } from '@/server/services/user.service';
-import { validateRegistration, validateLogin, userExists } from '@/server/utils/validate';
+import { validateRegistration, validateLogin, userExists } from '@/server/utils/validators';
 import type { RegistrationDTO, LoginDTO, UserWithTokens } from '@/server/types/user.types';
 
 // registration user + validate

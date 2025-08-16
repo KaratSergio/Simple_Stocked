@@ -19,17 +19,17 @@ const createDocSQL = createDocSQLRaw + ';';
 const getDocByIdSQL = getDocByIdSQLRaw + ';';
 const listDocsByOwnerSQL = listDocsByOwnerSQLRaw + ';';
 
-export async function createDocument(ownerId: number, title: string, fileUrl: string, status: string = 'draft') {
+export async function createDocument(ownerId: string, title: string, fileUrl: string, status: string = 'draft') {
     const result = await query(createDocSQL, [ownerId, title, fileUrl, status]);
     return result.rows[0];
 }
 
-export async function getDocumentById(id: number) {
+export async function getDocumentById(id: string) {
     const result = await query(getDocByIdSQL, [id]);
     return result.rows[0];
 }
 
-export async function listDocumentsByOwner(ownerId: number) {
+export async function listDocumentsByOwner(ownerId: string) {
     const result = await query(listDocsByOwnerSQL, [ownerId]);
     return result.rows;
 }

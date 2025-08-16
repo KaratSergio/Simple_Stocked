@@ -1,3 +1,4 @@
+import { toCamelCaseKeys } from './convertorCase';
 import * as userRepo from '@/server/data/repo/user.repository';
 
 // validate email
@@ -25,3 +26,30 @@ export function validateLogin(data: { email: string; password: string }) {
     if (!email || !password) throw new Error('Email and password are required');
     if (!isValidEmail(email)) throw new Error('Invalid email format');
 }
+
+/**
+* Generic validation of object fields.
+* @param obj - the object to validate
+* @param fields - an array of field names that must be non-empty
+* @param camelCaseConvert - if true, converts the object keys to camelCase
+* @returns an object with validated (and optionally camelCase) keys
+ */
+
+export function validateFields<T extends Record<string, any>, R extends Record<string, any>>(
+    obj: T,
+    fields: (keyof R)[],
+    camelCaseConvert = true
+): R {
+    const data = camelCaseConvert ? toCamelCaseKeys(obj) : obj;
+
+    for (const field of fields) {
+        const key = String(field);
+
+        if (data[key] === undefined || data[key] === null || data[key] === '') {
+            throw new Error(`Missing or invalid field: ${key}`);
+        }
+    }
+
+    return data as R;
+}
+

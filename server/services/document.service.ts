@@ -1,15 +1,11 @@
 import * as docRepo from '@/server/data/repo/document.repository';
-import type { DocumentDTO } from '@/server/types/document.types';
+import type { DocumentPayload } from '../types/document.types';
 
-// create + upload metadata
-export async function createDocument(ownerId: number, { title, file_url: fileUrl }: DocumentDTO) {
-    return await docRepo.createDocument(ownerId, title, fileUrl, 'draft');
-}
+export const documentService = {
+    create: (ownerId: string, payload: DocumentPayload) =>
+        docRepo.createDocument(ownerId, payload.title, payload.fileUrl, 'draft'),
 
-export async function getDocument(id: number) {
-    return await docRepo.getDocumentById(id);
-}
+    get: (documentId: string) => docRepo.getDocumentById(documentId),
 
-export async function listDocuments(ownerId: number) {
-    return await docRepo.listDocumentsByOwner(ownerId);
-}
+    list: (ownerId: string) => docRepo.listDocumentsByOwner(ownerId),
+};

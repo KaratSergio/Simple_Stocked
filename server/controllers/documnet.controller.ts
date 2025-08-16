@@ -1,19 +1,23 @@
-import * as docService from '@/server/services/document.service';
-import type { DocumentDTO } from '@/server/types/document.types';
-import { toCamelCaseKeys } from '@/server/utils/convertorCase';
+import { documentService } from '@/server/services/document.service';
+import type { DocumentDTO } from '../types/document.types';
+import { validateFields } from '@/server/utils/validators';
 
-export async function create(ownerId: number, reqBody: DocumentDTO) {
-    const body = toCamelCaseKeys(reqBody);
+export const documentController = {
+    create: (ownerId: string, payload: DocumentDTO) => {
+        const validatedPayload = validateFields(payload, ['title', 'fileUrl']);
+        validateFields({ ownerId }, ['ownerId'], false);
 
-    if (!body.title || !body.fileUrl) throw new Error('Invalid document payload');
+        return documentService.create(ownerId, validatedPayload);
+    },
 
-    return await docService.createDocument(ownerId, body);
-}
 
-export async function get(documentId: number) {
-    return await docService.getDocument(documentId);
-}
+    get: (documentId: string) => {
+        validateFields({ documentId }, ['documentId'], false);
+        return documentService.get(documentId);
+    },
 
-export async function list(ownerId: number) {
-    return await docService.listDocuments(ownerId);
-}
+    list: (ownerId: string) => {
+        validateFields({ ownerId }, ['ownerId'], false);
+        return documentService.list(ownerId);
+    },
+};
