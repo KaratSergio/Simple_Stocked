@@ -1,4 +1,4 @@
-import { toCamelCaseKeys } from './convertorCase';
+import { toCamelCaseKeys } from './convertCase';
 import * as userRepo from '@/server/data/repo/user.repository';
 
 // validate email
@@ -52,4 +52,3 @@ export function validateFields<T extends Record<string, any>, R extends Record<s
 
     return data as R;
 }
-

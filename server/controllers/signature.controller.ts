@@ -4,9 +4,11 @@ import { validateFields } from '@/server/utils/validators';
 
 export const signatureController = {
     invite: (payload: Partial<SignatureDTO>) => {
-        const data = validateFields<Partial<SignatureDTO>, { email: string; documentId: string; signerId?: string }>(
+        const data = validateFields<Partial<SignatureDTO>,
+            { email: string; documentId: string; signerId?: string, role: string, orderIndex: number }
+        >(
             payload,
-            ['email', 'documentId', 'signerId']
+            ['email', 'documentId', 'signerId', 'role', 'orderIndex']
         );
 
         return signatureService.invite(data);
@@ -22,8 +24,8 @@ export const signatureController = {
         return signatureService.sign(signerId);
     },
 
-    decline: (signerId: string) => {
+    decline: (signerId: string, reason: string) => {
         validateFields({ signerId }, ['signerId']);
-        return signatureService.decline(signerId);
+        return signatureService.decline(signerId, reason);
     },
 };

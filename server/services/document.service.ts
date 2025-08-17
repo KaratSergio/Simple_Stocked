@@ -8,4 +8,7 @@ export const documentService = {
     get: (documentId: string) => docRepo.getDocumentById(documentId),
 
     list: (ownerId: string) => docRepo.listDocumentsByOwner(ownerId),
+
+    updateStatus: (documentId: string, status: string, signedFileUrl?: string) =>
+        docRepo.updateDocumentStatus(documentId, status, signedFileUrl ?? undefined),
 };

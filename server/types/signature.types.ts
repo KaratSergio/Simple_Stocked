@@ -10,4 +10,6 @@ export interface SignaturePayload {
     documentId: string;
     signerId?: string | null;
     email: string;
+    role: string;
+    orderIndex: number;
 }
