@@ -1,11 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import * as userController from '@/server/controllers/user.controller';
+import { NextRequest, NextResponse } from "next/server";
+import * as userController from "@/server/controllers/user.controller";
+import { setAuthCookies } from "@/server/utils/cookies";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json(); // { email, password }
     const user = await userController.login(body);
-    return NextResponse.json(user, { status: 200 });
+
+    const res = NextResponse.json({ userId: user.id, name: user.name, email: user.email });
+    setAuthCookies(res, user.accessToken, user.refreshToken);
+
+    return res;
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 401 });
   }

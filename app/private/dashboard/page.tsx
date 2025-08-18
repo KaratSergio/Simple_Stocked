@@ -1,20 +1,27 @@
 'use client'
-import { useState } from 'react';
+import { useState } from "react";
 import Uploader from "@/components/Uploader";
-import { createDocument } from '@/api/documents/create/document';
 
 export default function DashboardPage() {
     const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
 
     const handleUploaded = async (fileUrl: string) => {
         setUploadedFileUrl(fileUrl);
-
-
-        const ownerId = "1";
         const title = "My PDF Document";
-        const doc = await createDocument(ownerId, title, fileUrl);
 
-        alert(`doc create with ID: ${doc.id}`);
+        const res = await fetch("/api/documents/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, fileUrl }),
+        });
+
+        if (!res.ok) {
+            alert("Error creating document");
+            return;
+        }
+
+        const doc = await res.json();
+        alert(`Document created with ID: ${doc.id}`);
     };
 
     return (

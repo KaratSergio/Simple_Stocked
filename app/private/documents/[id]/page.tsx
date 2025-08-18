@@ -1,12 +1,39 @@
 'use client';
 import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+interface Document {
+    id: number;
+    title: string;
+    fileUrl: string;
+}
 
 export default function DocumentViewPage() {
     const params = useParams();
+    const [doc, setDoc] = useState<Document | null>(null);
+
+    useEffect(() => {
+        async function fetchDoc() {
+            const res = await fetch(`/api/documents/${params.id}`, {
+                credentials: 'include',
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            setDoc(data);
+        }
+        fetchDoc();
+    }, [params.id]);
+
+    if (!doc) return <p>Loading...</p>;
+
     return (
         <div>
-            <h2 className="text-xl font-semibold mb-4">Viewing Document ID: {params.id}</h2>
-            <p>Document content preview goes here...</p>
+            <h2 className="text-xl font-semibold mb-4">{doc.title}</h2>
+            <p>
+                <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    Open document
+                </a>
+            </p>
         </div>
     );
 }
