@@ -1,15 +1,15 @@
 export interface SignatureDTO {
-    document_id: string;
+    emails: string[];
+    documentIds: string[];
     signer_id: string;
-    email: string;
     status: string;
     signed_at: string;
 }
 
 export interface SignaturePayload {
-    documentId: string;
+    emails: string[];
+    documentIds: string[];
     signerId?: string | null;
-    email: string;
     role: string;
     orderIndex: number;
 }

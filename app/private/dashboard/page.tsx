@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useModalStore } from '@/store/modalStore';
 import { apiFetch } from '@/api/auth/refresh/refresh';
-import DocumentUploaderForm from '@/components/document/DocCreateFrom';
+import DocCreateForm from '@/components/document/DocCreateForm';
+import InviteSignForm from '@/app/components/signature/InviteSignForm';
 
 type Document = {
     id: number;
@@ -78,13 +79,23 @@ export default function DashboardPage() {
                     <button
                         className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
                         onClick={() =>
-                            openModal(<DocumentUploaderForm onDone={closeModal} />)
+                            openModal(<DocCreateForm onCancel={closeModal} />)
                         }
                     >
                         Upload Document
                     </button>
 
-                    <button className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">
+                    <button
+                        className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+                        onClick={() =>
+                            openModal(
+                                <InviteSignForm
+                                    documents={recentDocs.map(d => ({ id: d.id.toString(), title: d.title }))}
+                                    onCancel={closeModal}
+                                />
+                            )
+                        }
+                    >
                         Invite to Sign
                     </button>
                 </div>

@@ -22,24 +22,31 @@ const updateSignerStatusSQL = updateSignerStatusSQLRaw + ';';
 
 // Add signer
 export async function addSigner(payload: {
-    documentId: string;
+    documentIds: string[];
     signerId?: string | null;
-    email: string;
+    emails: string[];
     role: string;
     status: string;
     orderIndex: number;
 }) {
     const dbPayload = toSnakeCaseKeys(payload);
-    const result = await query(addSignerSQL, [
-        dbPayload.document_id,
-        dbPayload.signer_id ?? null,
-        dbPayload.email,
-        dbPayload.role,
-        dbPayload.status,
-        dbPayload.order_index
-    ]);
-    return result.rows[0];
+    const resultRows = [];
+
+    for (const documentId of dbPayload.document_ids) {
+        const result = await query(addSignerSQL, [
+            documentId,
+            dbPayload.signer_id ?? null,
+            dbPayload.emails,
+            dbPayload.role,
+            dbPayload.status,
+            dbPayload.order_index
+        ]);
+        resultRows.push(result.rows[0]);
+    }
+
+    return resultRows;
 }
+
 
 // List signers
 export async function listSigners(documentId: string) {

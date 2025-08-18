@@ -1,9 +1,10 @@
 'use client';
 import { useState } from 'react';
 import Uploader from '@/components/Uploader';
+import { FormButtons } from '../FormButtons';
 import { apiFetch } from '@/api/auth/refresh/refresh';
 
-export default function DocCreateForm({ onDone, onCancel }: { onDone?: () => void; onCancel?: () => void }) {
+export default function DocCreateForm({ onCancel }: { onCancel?: () => void }) {
     const [title, setTitle] = useState('');
     const [fileUrl, setFileUrl] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -26,7 +27,7 @@ export default function DocCreateForm({ onDone, onCancel }: { onDone?: () => voi
 
             setTitle('');
             setFileUrl(null);
-            onDone?.();
+            onCancel?.();
         } catch (err) {
             console.error(err);
             setError('Failed to create document');
@@ -54,23 +55,12 @@ export default function DocCreateForm({ onDone, onCancel }: { onDone?: () => voi
 
             <Uploader onUploaded={(url) => setFileUrl(url)} />
 
-            <div className="flex gap-2">
-                <button
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    onClick={handleSubmit}
-                    disabled={loading}
-                >
-                    Submit
-                </button>
-
-                <button
-                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-                    onClick={onCancel}
-                    disabled={loading}
-                >
-                    Cancel
-                </button>
-            </div>
+            <FormButtons
+                submitText="Submit"
+                onCancel={onCancel}
+                loading={loading}
+                submitColor="blue"
+            />
         </div>
     );
 }

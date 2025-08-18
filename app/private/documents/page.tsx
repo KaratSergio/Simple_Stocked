@@ -32,11 +32,11 @@ export default function DocumentsPage() {
             {error && <p className="text-red-500 mb-2">{error}</p>}
             <ul className="space-y-2">
                 {docs.map(doc => (
-                    <li key={doc.id} className="p-2 bg-white rounded shadow hover:bg-gray-100 transition">
-                        <Link href={`/private/documents/${doc.id}`}>
+                    <Link href={`/private/documents/${doc.id}`}>
+                        <li key={doc.id} className="p-2 mb-1 bg-white rounded shadow hover:bg-gray-100 transition">
                             {doc.title}
-                        </Link>
-                    </li>
+                        </li>
+                    </Link>
                 ))}
             </ul>
         </div>

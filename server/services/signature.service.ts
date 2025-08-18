@@ -1,16 +1,24 @@
 import * as sigRepo from '@/server/data/repo/signature.repository';
-import type { SignaturePayload } from '../types/signature.types';
 
 export const signatureService = {
-    invite: (payload: SignaturePayload) =>
-        sigRepo.addSigner({
-            documentId: payload.documentId,
-            signerId: payload.signerId ?? null,
-            email: payload.email,
-            role: payload.role ?? 'signer',
+    invite: async (payload: {
+        emails: string[];
+        documentIds: string[];
+        signerId?: string;
+        role?: string;
+        orderIndex?: number;
+    }) => {
+        const { emails, documentIds, signerId, role = 'signer', orderIndex = 0 } = payload;
+
+        return sigRepo.addSigner({
+            emails,
+            documentIds,
+            signerId,
+            role,
             status: 'pending',
-            orderIndex: payload.orderIndex ?? 0,
-        }),
+            orderIndex
+        });
+    },
 
     list: (documentId: string) => sigRepo.listSigners(documentId),
 

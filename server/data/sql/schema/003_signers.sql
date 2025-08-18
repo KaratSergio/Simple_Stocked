@@ -25,3 +25,14 @@ ALTER TABLE signatures ADD CONSTRAINT signatures_role_check
 
 ALTER TABLE signatures ADD CONSTRAINT signatures_status_check
     CHECK (status IN ('pending','viewed','signed','declined')) NOT VALID;
+
+-- change type 
+ALTER TABLE signatures 
+    ALTER COLUMN email TYPE text[] USING ARRAY[email];
+
+-- signature_documents: connection of the signatory with the documents
+CREATE TABLE IF NOT EXISTS signature_documents (
+    id SERIAL PRIMARY KEY,
+    signature_id INT NOT NULL REFERENCES signatures(id) ON DELETE CASCADE,
+    document_id INT NOT NULL REFERENCES documents(id) ON DELETE CASCADE
+);
