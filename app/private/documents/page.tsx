@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/app/api/auth/refresh/refresh';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -15,18 +16,11 @@ export default function DocumentsPage() {
     useEffect(() => {
         async function fetchDocs() {
             try {
-                const res = await fetch('/api/documents/list', {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-                if (!res.ok) {
-                    setError(`Ошибка: ${res.status}`);
-                    return;
-                }
-                const data = await res.json();
+                const res = await apiFetch('/api/documents/list');
+                const data = await res?.json();
                 setDocs(data);
             } catch (err: any) {
-                setError(err.message || 'Ошибка запроса');
+                setError(err.message);
             }
         }
         fetchDocs();

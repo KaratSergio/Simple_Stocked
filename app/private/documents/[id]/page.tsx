@@ -1,4 +1,5 @@
 'use client';
+import { apiFetch } from '@/api/auth/refresh/refresh';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -14,11 +15,8 @@ export default function DocumentViewPage() {
 
     useEffect(() => {
         async function fetchDoc() {
-            const res = await fetch(`/api/documents/${params.id}`, {
-                credentials: 'include',
-            });
-            if (!res.ok) return;
-            const data = await res.json();
+            const res = await apiFetch(`/api/documents/${params.id}`);
+            const data = await res?.json();
             setDoc(data);
         }
         fetchDoc();
