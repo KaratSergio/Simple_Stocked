@@ -11,12 +11,13 @@ const __dirname = dirname(__filename);
 const sqlFilePath = path.join(__dirname, '../sql/queries/signatures.sql');
 const sqlFile = fs.readFileSync(sqlFilePath, 'utf-8');
 
-const [addSignerSQLRaw, listSignersSQLRaw, updateSignerStatusSQLRaw] = sqlFile
+const [addSignerSQLRaw, linkedDocsSQLRaw, listSignersSQLRaw, updateSignerStatusSQLRaw] = sqlFile
     .split(';')
     .map(q => q.trim())
     .filter(Boolean);
 
 const addSignerSQL = addSignerSQLRaw + ';';
+const linkedDocsSQL = linkedDocsSQLRaw + ';';
 const listSignersSQL = listSignersSQLRaw + ';';
 const updateSignerStatusSQL = updateSignerStatusSQLRaw + ';';
 
@@ -30,21 +31,46 @@ export async function addSigner(payload: {
     orderIndex: number;
 }) {
     const dbPayload = toSnakeCaseKeys(payload);
-    const resultRows = [];
 
-    for (const documentId of dbPayload.document_ids) {
+    try {
+        console.log('[addSigner] payload:', dbPayload);
+
         const result = await query(addSignerSQL, [
-            documentId,
             dbPayload.signer_id ?? null,
             dbPayload.emails,
             dbPayload.role,
             dbPayload.status,
             dbPayload.order_index
         ]);
-        resultRows.push(result.rows[0]);
-    }
 
-    return resultRows;
+        console.log('[addSigner] signature inserted:', result.rows[0]);
+
+        const signature = result.rows[0];
+        const linkedDocs = [];
+
+        for (const documentId of dbPayload.document_ids) {
+            try {
+                console.log('[addSigner] linking document:', documentId);
+
+                const linkResult = await query(linkedDocsSQL, [
+                    signature.id,
+                    documentId
+                ]);
+
+                console.log('[addSigner] linked:', linkResult.rows[0]);
+
+                linkedDocs.push(linkResult.rows[0]);
+            } catch (err) {
+                console.error('[addSigner] error linking document:', documentId, err);
+                throw err;
+            }
+        }
+
+        return { signature, linkedDocs };
+    } catch (err) {
+        console.error('[addSigner] SQL error:', err);
+        throw err; // пробрасываем дальше, но с логом
+    }
 }
 
 

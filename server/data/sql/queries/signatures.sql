@@ -1,10 +1,18 @@
 -- add signer
-INSERT INTO signatures (document_id, signer_id, email, role, status, order_index)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO signatures (signer_id, email, role, status, order_index)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING *;
+
+-- link signature to documents
+INSERT INTO signature_documents (signature_id, document_id)
+VALUES ($1, $2)
 RETURNING *;
 
 -- list signers by document
-SELECT * FROM signatures WHERE document_id = $1 ORDER BY order_index ASC, id ASC;
+SELECT s.*, sd.document_id
+FROM signatures s
+JOIN signature_documents sd ON s.id = sd.signature_id
+WHERE sd.document_id = $1;
 
 -- update signer status
 UPDATE signatures

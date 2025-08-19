@@ -1,4 +1,5 @@
 import * as sigRepo from '@/server/data/repo/signature.repository';
+import { sendInvite } from '@/server/services/mailer.service';
 
 export const signatureService = {
     invite: async (payload: {
@@ -10,7 +11,7 @@ export const signatureService = {
     }) => {
         const { emails, documentIds, signerId, role = 'signer', orderIndex = 0 } = payload;
 
-        return sigRepo.addSigner({
+        const { signature, linkedDocs } = await sigRepo.addSigner({
             emails,
             documentIds,
             signerId,
@@ -18,6 +19,15 @@ export const signatureService = {
             status: 'pending',
             orderIndex
         });
+
+        // For each related entry we send a letter
+        for (const doc of linkedDocs) {
+            for (const email of emails) {
+                sendInvite(email, doc.document_id.toString(), signature.id.toString());
+            }
+        }
+
+        return { signature, linkedDocs };
     },
 
     list: (documentId: string) => sigRepo.listSigners(documentId),

@@ -6,7 +6,7 @@ import LogoutButton from './auth/LogoutBtn';
 const menu = [
     { key: 'dashboard', label: 'Dashboard', href: '/private/dashboard' },
     { key: 'documents', label: 'Documents', href: '/private/documents' },
-    { key: 'signatures', label: 'Signatures', href: '/private/signatures' },
+    { key: 'signatures', label: 'Signatures', href: '/private/sign' },
     { key: 'settings', label: 'Settings', href: '/private/settings' },
 ];
 
