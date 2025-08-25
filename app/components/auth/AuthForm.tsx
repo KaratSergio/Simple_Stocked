@@ -20,14 +20,6 @@ export default function AuthForm() {
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>();
 
-    // check token when page loads
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            router.push('/private/dashboard');
-        }
-    }, [router]);
-
     const onSubmit = async (data: FormData) => {
         const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
 
@@ -40,7 +32,6 @@ export default function AuthForm() {
         const json = await res.json();
 
         if (res.ok) {
-            localStorage.setItem('authToken', json.token);
             router.push('/private/dashboard');
         }
 
