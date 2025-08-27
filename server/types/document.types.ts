@@ -1,12 +1,9 @@
-export interface DocumentDTO {
-    owner_id: string;
-    title: string;
-    file_url: string;
-    status: string;
+export interface Document {
+    id: number;
+    template_id: number;
+    owner_id: number;
+    values: any;
+    pdf_generated?: string;
+    status: "draft" | "pending" | "in_progress" | "signed" | "declined";
     created_at: string;
-}
-
-export interface DocumentPayload {
-    title: string;
-    fileUrl: string;
 }

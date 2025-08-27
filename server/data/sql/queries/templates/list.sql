@@ -1,0 +1,1 @@
+SELECT * FROM document_templates ORDER BY created_at DESC;
