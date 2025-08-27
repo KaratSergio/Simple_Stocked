@@ -1,159 +1,110 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useModalStore } from '@/store/modalStore';
-import { apiFetch } from '@/api/auth/refresh/refresh';
-import DocCreateForm from '@/components/document/DocCreateForm';
-import InviteSignForm from '@/app/components/signature/InviteSignForm';
+/*
+Workflow of components:
 
-type Document = {
-    id: number;
-    title: string;
-    status: string;
-    createdAt: string;
-};
+TemplateCreate → creates a template and adds it to the list.
+TemplateList → selecting a template updates selectedTemplate.
+DocumentCreate → uses selectedTemplate.id and calls onCreate when creating a document, updating createdDocument.
+DocumentList → selecting a document updates createdDocument.
+RecipientAdd & RecipientList → work for the selected document (createdDocument.id).
+SignatureList → displays signatures for the current document.
+*/
 
-type PendingSignature = {
-    id: number;
-    email: string;
-    documentTitle: string;
-    invitedAt: string;
-};
+import { useState, useEffect } from "react";
+import { TemplateList, TemplateCreate } from "@/app/components/templates";
+import { DocumentList, DocumentCreate } from "@/app/components/documents";
+import { RecipientList, RecipientAdd } from "@/components/recipients";
+import { SignatureList } from "@/components/signatures";
 
 export default function DashboardPage() {
-    const [recentDocs, setRecentDocs] = useState<Document[]>([]);
-    const [pendingSignatures, setPendingSignatures] = useState<PendingSignature[]>([]);
-    const [loadingDocs, setLoadingDocs] = useState(true);
-    const [loadingSignatures, setLoadingSignatures] = useState(true);
+    const [templates, setTemplates] = useState<any[]>([]);
+    const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
 
-    const { openModal, closeModal } = useModalStore();
+    const [documents, setDocuments] = useState<any[]>([]);
+    const [createdDocument, setCreatedDocument] = useState<any>(null);
 
+    const [ownerId] = useState(1); // current user
+
+    // get templates
     useEffect(() => {
-        const fetchDocs = async () => {
-            try {
-                const res = await apiFetch('/api/documents/list');
-                const data = await res?.json();
-                setRecentDocs(data);
-            } catch (e) {
-                console.error('Failed to fetch documents', e);
-            } finally {
-                setLoadingDocs(false);
-            }
-        };
-
-        const fetchPending = async () => {
-            try {
-                const fakeData: PendingSignature[] = [
-                    {
-                        id: 1,
-                        email: 'john@example.com',
-                        documentTitle: 'Contract #123',
-                        invitedAt: '2025-08-15',
-                    },
-                    {
-                        id: 2,
-                        email: 'sarah@example.com',
-                        documentTitle: 'NDA #77',
-                        invitedAt: '2025-08-16',
-                    },
-                ];
-                setPendingSignatures(fakeData);
-            } catch (e) {
-                console.error('Failed to fetch pending signatures', e);
-            } finally {
-                setLoadingSignatures(false);
-            }
-        };
-
-        fetchDocs();
-        fetchPending();
+        fetch("/api/templates/list")
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) setTemplates(data.data);
+            });
     }, []);
 
+    // get docs
+    useEffect(() => {
+        fetch(`/api/documents/list?ownerId=${ownerId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) setDocuments(data.data);
+            });
+    }, [ownerId, createdDocument]);
+
     return (
-        <div className="p-6 space-y-6">
-            <h2 className="text-2xl font-semibold">Dashboard</h2>
+        <div className="space-y-8 p-6">
 
-            {/* Quick Actions */}
-            <section>
-                <h3 className="text-lg font-medium mb-2">Quick Actions</h3>
-                <div className="flex gap-3">
-                    <button
-                        className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-                        onClick={() =>
-                            openModal(<DocCreateForm onCancel={closeModal} />)
-                        }
-                    >
-                        Upload Document
-                    </button>
-
-                    <button
-                        className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
-                        onClick={() =>
-                            openModal(
-                                <InviteSignForm
-                                    documents={recentDocs.map(d => ({ id: d.id.toString(), title: d.title }))}
-                                    onCancel={closeModal}
-                                />
-                            )
-                        }
-                    >
-                        Invite to Sign
-                    </button>
-                </div>
+            {/* ======= Templates ======= */}
+            <section className="bg-white p-4 rounded shadow">
+                <h2 className="text-xl font-bold mb-4">Templates</h2>
+                <TemplateCreate onCreate={template => {
+                    setTemplates(prev => [...prev, template]);
+                }} />
+                <TemplateList
+                    templates={templates}
+                    selectedTemplate={selectedTemplate}
+                    onSelect={setSelectedTemplate}
+                />
             </section>
 
-            {/* Recent Documents */}
-            <section>
-                <h3 className="text-lg font-medium mb-2">Recent Documents</h3>
-                {loadingDocs ? (
-                    <p>Loading...</p>
-                ) : recentDocs.length === 0 ? (
-                    <p className="text-gray-500">No documents yet.</p>
+            {/* ======= Create Document ======= */}
+            <section className="bg-white p-4 rounded shadow">
+                <h2 className="text-xl font-bold mb-4">Create Document</h2>
+                {selectedTemplate ? (
+                    <DocumentCreate
+                        templateId={selectedTemplate.id}
+                        onCreate={doc => setCreatedDocument(doc)}
+                    />
                 ) : (
-                    <ul className="divide-y divide-gray-200 bg-white rounded shadow">
-                        {recentDocs.map((doc) => (
-                            <li key={doc.id} className="p-3 flex justify-between">
-                                <span>{doc.title}</span>
-                                <span
-                                    className={`px-2 py-1 text-sm rounded ${doc.status === 'signed'
-                                        ? 'bg-green-100 text-green-700'
-                                        : 'bg-yellow-100 text-yellow-700'
-                                        }`}
-                                >
-                                    {doc.status}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
+                    <p>Select a template to create a document.</p>
+                )}
+                <DocumentList
+                    ownerId={ownerId}
+                    documents={documents}
+                    onSelect={setCreatedDocument}
+                />
+            </section>
+
+            {/* ======= Recipients ======= */}
+            <section className="bg-white p-4 rounded shadow">
+                <h2 className="text-xl font-bold mb-4">Recipients</h2>
+                {createdDocument ? (
+                    <>
+                        <RecipientAdd
+                            documentId={createdDocument.id}
+                            onAdd={recipient => {
+                                // Reload the list or add locally
+                            }}
+                        />
+                        <RecipientList documentId={createdDocument.id} />
+                    </>
+                ) : (
+                    <p>Create a document first.</p>
                 )}
             </section>
 
-            {/* Pending Signatures */}
-            <section>
-                <h3 className="text-lg font-medium mb-2">Pending Signatures</h3>
-                {loadingSignatures ? (
-                    <p>Loading...</p>
-                ) : pendingSignatures.length === 0 ? (
-                    <p className="text-gray-500">No pending signatures.</p>
+            {/* ======= Signatures ======= */}
+            <section className="bg-white p-4 rounded shadow">
+                <h2 className="text-xl font-bold mb-4">Signatures</h2>
+                {createdDocument ? (
+                    <SignatureList documentId={createdDocument.id} />
                 ) : (
-                    <ul className="divide-y divide-gray-200 bg-white rounded shadow">
-                        {pendingSignatures.map((sig) => (
-                            <li key={sig.id} className="p-3">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <p className="font-medium">{sig.email}</p>
-                                        <p className="text-sm text-gray-500">
-                                            Document: {sig.documentTitle}
-                                        </p>
-                                    </div>
-                                    <span className="text-xs text-gray-400">
-                                        Invited: {sig.invitedAt}
-                                    </span>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
+                    <p>Create a document first.</p>
                 )}
             </section>
+
         </div>
     );
 }
