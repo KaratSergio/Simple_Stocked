@@ -1,27 +1,33 @@
-import { documentService } from '@/server/services/document.service';
-import type { DocumentPayload } from '../types/document.types';
-import { validateFields } from '@/server/utils/validators';
+import * as documentService from "@/server/services/document.service";
+import { Document } from "@/server/types/document.types";
+import { Recipient } from "@/server/types/recipient.types";
 
-export const documentController = {
-    create: (ownerId: string, payload: DocumentPayload) => {
-        const validatedPayload = validateFields(payload, ['title', 'fileUrl']);
-        validateFields({ ownerId }, ['ownerId'], false);
+export async function createDocument(payload: any): Promise<Document> {
+    if (!payload.templateId) throw new Error("Template ID required");
+    if (!payload.ownerId) throw new Error("Owner ID required");
+    if (!payload.values) throw new Error("Document values required");
 
-        return documentService.create(ownerId, validatedPayload);
-    },
+    return documentService.createDocument(payload.templateId, payload.ownerId, payload.values);
+}
 
-    get: (documentId: string) => {
-        validateFields({ documentId }, ['documentId'], false);
-        return documentService.get(documentId);
-    },
+export async function listDocuments(ownerId: number): Promise<Document[]> {
+    if (!ownerId) throw new Error("Owner ID required");
+    return documentService.listDocumentsByOwner(ownerId);
+}
 
-    list: (ownerId: string) => {
-        validateFields({ ownerId }, ['ownerId'], false);
-        return documentService.list(ownerId);
-    },
+export async function updateDocumentStatus(documentId: number, status: string, pdfGenerated?: string): Promise<Document> {
+    if (!documentId) throw new Error("Document ID required");
+    if (!status) throw new Error("Status required");
+    return documentService.updateDocumentStatus(documentId, status, pdfGenerated);
+}
 
-    updateStatus: (documentId: string, status: string, signedFileUrl?: string) => {
-        validateFields({ documentId, status }, ['documentId', 'status'], false);
-        return documentService.updateStatus(documentId, status, signedFileUrl);
-    },
-};
+export async function addRecipient(documentId: number, email: string): Promise<Recipient> {
+    if (!documentId) throw new Error("Document ID required");
+    if (!email) throw new Error("Email required");
+    return documentService.addRecipient(documentId, email);
+}
+
+export async function listRecipients(documentId: number): Promise<Recipient[]> {
+    if (!documentId) throw new Error("Document ID required");
+    return documentService.listRecipients(documentId);
+}

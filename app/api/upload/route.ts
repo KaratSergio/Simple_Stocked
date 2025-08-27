@@ -1,4 +1,3 @@
-// app/api/upload/route.ts
 import { r2 } from '@/server/config/r2.config';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 

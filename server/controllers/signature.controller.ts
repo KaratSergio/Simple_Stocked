@@ -1,35 +1,10 @@
-import { signatureService } from '@/server/services/signature.service';
-import type { SignatureDTO } from '../types/signature.types';
-import { validateFields } from '@/server/utils/validators';
+import * as signatureService from "@/server/services/signature.service";
+import { Signature } from "@/server/types/signature.types";
 
-export const signatureController = {
-    invite: (payload: Partial<SignatureDTO>) => {
-        const data = validateFields<Partial<SignatureDTO>, { emails: string[]; documentIds: string[]; signerId?: string; role?: string; orderIndex?: number }>(
-            payload,
-            ['emails', 'documentIds']
-        );
+export async function addSignature(documentId: number, recipientId: number, signatureData: string): Promise<Signature> {
+    return signatureService.addSignature(documentId, recipientId, signatureData);
+}
 
-        return signatureService.invite({
-            emails: data.emails,
-            documentIds: data.documentIds,
-            signerId: data.signerId,
-            role: data.role,
-            orderIndex: data.orderIndex
-        });
-    },
-
-    list: (documentId: string) => {
-        validateFields({ documentId }, ['documentId']);
-        return signatureService.list(documentId);
-    },
-
-    sign: (signerId: string, signatureFileUrl?: string) => {
-        validateFields({ signerId }, ['signerId']);
-        return signatureService.sign(signerId, signatureFileUrl);
-    },
-
-    decline: (signerId: string, reason: string) => {
-        validateFields({ signerId }, ['signerId']);
-        return signatureService.decline(signerId, reason);
-    },
-};
+export async function listSignatures(documentId: number): Promise<Signature[]> {
+    return signatureService.listSignatures(documentId);
+}

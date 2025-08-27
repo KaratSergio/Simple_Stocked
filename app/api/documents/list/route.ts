@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { documentService } from "@/server/services/document.service";
-import { getUserIdFromRequest } from "@/server/utils/jwt";
+import * as documentController from "@/server/controllers/document.controller";
 
 export async function GET(req: NextRequest) {
-    const userId = getUserIdFromRequest(req);
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
     try {
-        const docs = await documentService.list(userId);
-        return NextResponse.json(docs);
+        const { searchParams } = new URL(req.url);
+        const ownerIdParam = searchParams.get("ownerId");
+        if (!ownerIdParam) throw new Error("ownerId query required");
+
+        const docs = await documentController.listDocuments(Number(ownerIdParam));
+        return NextResponse.json({ success: true, data: docs });
     } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 400 });
+        return NextResponse.json({ success: false, error: err.message });
     }
 }

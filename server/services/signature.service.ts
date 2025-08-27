@@ -1,48 +1,19 @@
-import * as sigRepo from '@/server/data/repo/signature.repository';
-import { sendInvite } from '@/server/services/mailer.service';
+import * as signatureRepo from "@/server/data/repo/signature.repository";
+import { Signature } from "@/server/types/signature.types";
 
-export const signatureService = {
-    invite: async (payload: {
-        emails: string[];
-        documentIds: string[];
-        signerId?: string;
-        role?: string;
-        orderIndex?: number;
-    }) => {
-        const { emails, documentIds, signerId, role = 'signer', orderIndex = 0 } = payload;
+export async function addSignature(
+    documentId: number,
+    recipientId: number,
+    signatureData: string
+): Promise<Signature> {
+    if (!documentId) throw new Error("Document ID is required");
+    if (!recipientId) throw new Error("Recipient ID is required");
+    if (!signatureData) throw new Error("Signature data is required");
 
-        const { signature, linkedDocs } = await sigRepo.addSigner({
-            emails,
-            documentIds,
-            signerId,
-            role,
-            status: 'pending',
-            orderIndex
-        });
+    return signatureRepo.addSignature(documentId, recipientId, signatureData);
+}
 
-        // For each related entry we send a letter
-        for (const doc of linkedDocs) {
-            for (const email of emails) {
-                sendInvite(email, doc.document_id.toString(), signature.id.toString());
-            }
-        }
-
-        return { signature, linkedDocs };
-    },
-
-    list: (documentId: string) => sigRepo.listSigners(documentId),
-
-    sign: (signerId: string, signatureFileUrl?: string) =>
-        sigRepo.updateSignerStatus({
-            signerId,
-            status: 'signed',
-            signatureFileUrl
-        }),
-
-    decline: (signerId: string, reason: string) =>
-        sigRepo.updateSignerStatus({
-            signerId,
-            status: 'declined',
-            reason
-        }),
-};
+export async function listSignatures(documentId: number): Promise<Signature[]> {
+    if (!documentId) throw new Error("Document ID is required");
+    return signatureRepo.listSignaturesByDocument(documentId);
+}
