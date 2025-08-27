@@ -1,45 +1,44 @@
-import { query } from '@/server/config/db.config';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
-import { toSnakeCaseKeys } from '@/server/utils/convertCase';
+import fs from "fs";
+import path from "path";
+import { query } from "@/server/config/db.config";
+import { Document } from "@/server/types/document.types";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const basePath = path.join(process.cwd(), "server/data/sql/queries/documents");
 
-const sqlFilePath = path.join(__dirname, '../sql/queries/documents.sql');
-const sqlFile = fs.readFileSync(sqlFilePath, 'utf-8');
+function loadQuery(name: string) {
+    return fs.readFileSync(path.join(basePath, name), "utf8");
+}
 
-const [createDocSQLRaw, getDocByIdSQLRaw, listDocsByOwnerSQLRaw, updateDocStatusSQLRaw] = sqlFile
-    .split(';')
-    .map(q => q.trim())
-    .filter(Boolean);
-
-const createDocSQL = createDocSQLRaw + ';';
-const getDocByIdSQL = getDocByIdSQLRaw + ';';
-const listDocsByOwnerSQL = listDocsByOwnerSQLRaw + ';';
-const updateDocStatusSQL = updateDocStatusSQLRaw + ';';
-
-export async function createDocument(ownerId: string, title: string, fileUrl: string, status: string = 'draft') {
-
-    const dbPayload = toSnakeCaseKeys({ title, fileUrl, status });
-    const result = await query(createDocSQL, [ownerId, dbPayload.title, dbPayload.file_url, dbPayload.status]);
+export async function createDocument(
+    templateId: number,
+    ownerId: number,
+    values: any,
+    pdfGenerated: string | null,
+    status: string = "draft"
+): Promise<Document> {
+    const sql = loadQuery("create.sql");
+    const result = await query(sql, [templateId, ownerId, values, pdfGenerated, status]);
     return result.rows[0];
 }
 
-export async function getDocumentById(id: string) {
-    const result = await query(getDocByIdSQL, [id]);
-    return result.rows[0];
+export async function getDocumentById(id: number): Promise<Document | null> {
+    const sql = loadQuery("getById.sql");
+    const result = await query(sql, [id]);
+    return result.rows[0] ?? null;
 }
 
-export async function listDocumentsByOwner(ownerId: string) {
-    const result = await query(listDocsByOwnerSQL, [ownerId]);
+export async function listDocumentsByOwner(ownerId: number): Promise<Document[]> {
+    const sql = loadQuery("listByOwner.sql");
+    const result = await query(sql, [ownerId]);
     return result.rows;
 }
 
-export async function updateDocumentStatus(id: string, status: string, signedFileUrl?: string) {
-    const dbPayload = toSnakeCaseKeys({ status, signedFileUrl });
-    const result = await query(updateDocStatusSQL, [id, dbPayload.status, dbPayload.signed_file_url ?? null]);
+export async function updateDocumentStatus(
+    id: number,
+    status: string,
+    pdfGenerated?: string
+): Promise<Document> {
+    const sql = loadQuery("updateStatus.sql");
+    const result = await query(sql, [id, status, pdfGenerated ?? null]);
     return result.rows[0];
 }
