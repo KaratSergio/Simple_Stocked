@@ -1,7 +1,6 @@
 'use client';
-
-import { useState } from "react";
 import { Rnd } from "react-rnd";
+import { useState, useEffect } from "react";
 
 export interface DocumentElement {
     id: string;
@@ -14,10 +13,21 @@ export interface DocumentElement {
     value?: string;
 }
 
-export const TemplateEditor = () => {
-    const [elements, setElements] = useState<DocumentElement[]>([]);
-    const [templateName, setTemplateName] = useState("");
-    const [loading, setLoading] = useState(false);
+interface TemplateEditorProps {
+    initialData?: {
+        name: string;
+        elements: DocumentElement[];
+    };
+    onChange?: (data: { name: string; elements: DocumentElement[] }) => void;
+}
+
+export const TemplateEditor = ({ initialData, onChange }: TemplateEditorProps) => {
+    const [templateName, setTemplateName] = useState(initialData?.name || "");
+    const [elements, setElements] = useState<DocumentElement[]>(initialData?.elements || []);
+
+    useEffect(() => {
+        onChange?.({ name: templateName, elements });
+    }, [templateName, elements, onChange]);
 
     const addElement = (type: DocumentElement['type']) => {
         const newEl: DocumentElement = {
@@ -36,34 +46,9 @@ export const TemplateEditor = () => {
         setElements(prev => prev.map(el => el.id === updatedEl.id ? updatedEl : el));
     };
 
-    const handleCreateTemplate = async () => {
-        if (!templateName) return alert("Template name is required");
-        const jsonSchema = { elements, pageWidth: 600, pageHeight: 800 };
-
-        setLoading(true);
-        try {
-            const res = await fetch("/api/templates/create", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: templateName, json_schema: jsonSchema }),
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert("Template created: " + data.data.id);
-                setElements([]);
-                setTemplateName("");
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Failed to create template");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     return (
         <div className="p-6 space-y-4">
-            {/* Header: name + save */}
+            {/* Header: name */}
             <div className="flex items-center space-x-2">
                 <input
                     value={templateName}
@@ -71,9 +56,6 @@ export const TemplateEditor = () => {
                     placeholder="Template Name"
                     className="border p-2 flex-1"
                 />
-                <button onClick={handleCreateTemplate} disabled={loading} className="btn">
-                    {loading ? "Creating..." : "Create Template"}
-                </button>
             </div>
 
             {/* Add elements */}
@@ -117,4 +99,4 @@ export const TemplateEditor = () => {
             </div>
         </div>
     );
-}
+};

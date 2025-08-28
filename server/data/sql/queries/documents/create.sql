@@ -1,3 +1,3 @@
-INSERT INTO documents (template_id, owner_id, values, pdf_generated, status)
-VALUES ($1, $2, $3::jsonb, $4, $5)
+INSERT INTO documents (template_id, owner_id, title, values, pdf_generated, status)
+VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;

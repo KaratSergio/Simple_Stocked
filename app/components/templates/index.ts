@@ -1,3 +1,3 @@
 export { TemplateList } from './TemplateList';
-export { TemplateCreate } from './TemplateCreate';
+export { TemplateForm } from './TemplateForm';
 export { TemplateEditor } from './TemplateEditor';

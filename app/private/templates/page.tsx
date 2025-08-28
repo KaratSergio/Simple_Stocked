@@ -1,6 +1,6 @@
 'use client';
-import { TemplateEditor } from "@/components/templates";
+import { TemplateForm } from "@/components/templates";
 
 export default function TemplatePage() {
-    return <TemplateEditor />;
+    return <TemplateForm />;
 }

@@ -12,12 +12,13 @@ function loadQuery(name: string) {
 export async function createDocument(
     templateId: number,
     ownerId: number,
+    title: string,
     values: any,
     pdfGenerated: string | null,
     status: string = "draft"
 ): Promise<Document> {
     const sql = loadQuery("create.sql");
-    const result = await query(sql, [templateId, ownerId, values, pdfGenerated, status]);
+    const result = await query(sql, [templateId, ownerId, title, values, pdfGenerated, status]);
     return result.rows[0];
 }
 

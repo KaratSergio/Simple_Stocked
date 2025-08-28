@@ -5,8 +5,8 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const doc = await documentController.createDocument(body);
-    return NextResponse.json({ success: true, data: doc });
+    return NextResponse.json({ success: true, data: doc }, { status: 201 });
   } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message });
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

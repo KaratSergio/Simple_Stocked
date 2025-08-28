@@ -23,6 +23,7 @@ interface DocumentTemplate {
 export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
     const [templates, setTemplates] = useState<Template[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+    const [title, setTitle] = useState("");
     const [values, setValues] = useState<Record<string, any>>({});
     const router = useRouter();
 
@@ -44,7 +45,7 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
         const res = await fetch("/api/documents/create", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ templateId: selectedTemplate.id, ownerId, values })
+            body: JSON.stringify({ templateId: selectedTemplate.id, ownerId, title, values })
         });
 
         const data = await res.json();

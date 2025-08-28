@@ -6,13 +6,14 @@ import { Recipient } from "@/server/types/recipient.types";
 export async function createDocument(
     templateId: number,
     ownerId: number,
+    title: string,
     values: any
 ): Promise<Document> {
     if (!templateId) throw new Error("Template ID is required");
     if (!ownerId) throw new Error("Owner ID is required");
     if (!values) throw new Error("Document values are required");
 
-    return docRepo.createDocument(templateId, ownerId, values, null, "draft");
+    return docRepo.createDocument(templateId, ownerId, title, values, null, "draft");
 }
 
 export async function getDocumentById(id: number): Promise<Document | null> {
