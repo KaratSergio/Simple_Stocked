@@ -1,37 +1,33 @@
 'use client';
-import { apiFetch } from '@/api/auth/refresh/refresh';
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 
 interface Document {
     id: number;
-    title: string;
-    fileUrl: string;
+    name: string;
+    values: Record<string, any>;
 }
 
-export default function DocumentViewPage() {
+export default function DocumentPage() {
     const params = useParams();
-    const [doc, setDoc] = useState<Document | null>(null);
+    const [document, setDocument] = useState<Document | null>(null);
 
     useEffect(() => {
-        async function fetchDoc() {
-            const res = await apiFetch(`/api/documents/${params.id}`);
-            const data = await res?.json();
-            setDoc(data);
-        }
-        fetchDoc();
+        fetch(`/api/documents/${params.id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) setDocument(data.data);
+            });
     }, [params.id]);
 
-    if (!doc) return <p>Loading...</p>;
+    if (!document) return <p>Loading...</p>;
 
     return (
-        <div>
-            <h2 className="text-xl font-semibold mb-4">{doc.title}</h2>
-            <p>
-                <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                    Open document
-                </a>
-            </p>
+        <div className="p-6 space-y-4">
+            <h1 className="text-2xl font-bold">{document.name}</h1>
+            <pre className="border p-4 bg-gray-50">{JSON.stringify(document.values, null, 2)}</pre>
+
+            {/* Здесь можно добавить редактирование документа или управление ресипиентами */}
         </div>
     );
 }

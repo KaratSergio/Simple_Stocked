@@ -1,22 +1,29 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface DocumentListProps {
-    documents: any[];
     ownerId: number;
-    onSelect: (doc: any) => void;
+    documents: any[];
+    onDocumentsChange: (docs: any[]) => void; // for refresh list
 }
 
-export const DocumentList: React.FC<DocumentListProps> = ({ documents, ownerId, onSelect }) => {
+export const DocumentList: FC<DocumentListProps> = ({ ownerId, documents, onDocumentsChange }) => {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
-    useEffect(() => {
+    const fetchDocuments = async () => {
         setLoading(true);
-        fetch(`/api/documents/list?ownerId=${ownerId}`)
-            .then(res => res.json())
-            .then(data => { if (data.success) onSelect?.(data.data[0]) })
-            .finally(() => setLoading(false));
-    }, [ownerId, onSelect]);
+        try {
+            const res = await fetch(`/api/documents/list?ownerId=${ownerId}`);
+            const data = await res.json();
+            if (data.success) onDocumentsChange(data.data);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => { fetchDocuments() }, [ownerId]);
 
     if (loading) return <p>Loading documents...</p>;
     if (!documents.length) return <p>No documents found.</p>;
@@ -24,11 +31,14 @@ export const DocumentList: React.FC<DocumentListProps> = ({ documents, ownerId, 
     return (
         <ul>
             {documents.map(d => (
-                <li key={d.id} onClick={() => onSelect(d)} className="cursor-pointer p-1 hover:bg-gray-200">
-                    {d.title || d.id}
+                <li
+                    key={d.id}
+                    onClick={() => router.push(`/private/documents/${d.id}`)}
+                    className="cursor-pointer p-1 hover:bg-gray-200"
+                >
+                    {d.name || d.id}
                 </li>
             ))}
         </ul>
     );
 };
-
