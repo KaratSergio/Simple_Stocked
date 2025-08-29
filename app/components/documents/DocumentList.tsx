@@ -1,4 +1,5 @@
 'use client';
+
 import { FC, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -33,7 +34,7 @@ export const DocumentList: FC<DocumentListProps> = ({ ownerId, documents, onDocu
             {documents.map(d => (
                 <li
                     key={d.id}
-                    onClick={() => router.push(`/private/documents/${d.id}`)}
+                    onClick={() => router.push(`/page/documents/${d.id}`)}
                     className="cursor-pointer p-1 hover:bg-gray-200"
                 >
                     {d.name || d.id}

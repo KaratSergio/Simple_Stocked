@@ -4,11 +4,11 @@ import { useState } from 'react';
 import LogoutButton from './auth/LogoutBtn';
 
 const menu = [
-    { key: 'dashboard', label: 'Dashboard', href: '/private/dashboard' },
-    { key: 'templates', label: 'Templates', href: '/private/templates' },
-    { key: 'documents', label: 'Documents', href: '/private/documents' },
-    { key: 'signatures', label: 'Signatures', href: '/private/sign' },
-    { key: 'settings', label: 'Settings', href: '/private/settings' },
+    { key: 'dashboard', label: 'Dashboard', href: '/page/dashboard' },
+    { key: 'templates', label: 'Templates', href: '/page/templates' },
+    { key: 'documents', label: 'Documents', href: '/page/documents' },
+    { key: 'signatures', label: 'Signatures', href: '/page/sign' },
+    { key: 'settings', label: 'Settings', href: '/page/settings' },
 ];
 
 export default function Sidebar() {
