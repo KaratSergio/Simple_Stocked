@@ -1,134 +1,92 @@
 'use client';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { TemplateSelector } from "../templates";
+import { DynamicForm } from "./DynamicForm";
 
 interface Template {
-    id: number;
-    name: string;
-    json_schema?: DocumentTemplate;
-}
-
-interface DocumentElement {
-    id: string;
-    type: 'text' | 'textarea' | 'signature';
-    placeholder?: string;
+  id: number;
+  name: string;
+  json_schema?: DocumentTemplate;
 }
 
 interface DocumentTemplate {
-    elements: DocumentElement[];
-    pageWidth: number;
-    pageHeight: number;
+  elements: DocumentElement[];
+  pageWidth: number;
+  pageHeight: number;
+}
+
+interface DocumentElement {
+  id: string;
+  type: "text" | "textarea" | "signature";
+  placeholder?: string;
 }
 
 export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
-    const [templates, setTemplates] = useState<Template[]>([]);
-    const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-    const [title, setTitle] = useState("");
-    const [values, setValues] = useState<Record<string, any>>({});
-    const router = useRouter();
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [title] = useState("");
+  const [values, setValues] = useState<Record<string, any>>({});
+  const router = useRouter();
 
-    useEffect(() => {
-        fetch("/api/templates/list")
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) setTemplates(data.data);
-            });
-    }, []);
+  useEffect(() => {
+    fetch("/api/templates/list")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setTemplates(data.data);
+      });
+  }, []);
 
-    const handleChange = (id: string, value: any) => {
-        setValues(prev => ({ ...prev, [id]: value }));
-    };
+  const selectedTemplate = templates.find(t => t.id === selectedId) || null;
 
-    const handleSubmit = async () => {
-        if (!selectedTemplate) return alert("Select a template");
+  const handleChange = (id: string, value: any) =>
+    setValues(prev => ({ ...prev, [id]: value }));
 
-        const res = await fetch("/api/documents/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ templateId: selectedTemplate.id, ownerId, title, values })
-        });
+  const handleSubmit = async () => {
+    if (!selectedTemplate) return alert("Select a template");
 
-        const data = await res.json();
-        if (data.success) {
-            router.push(`/private/documents/${data.id}`);
-        } else {
-            alert("Failed to create document");
-        }
-    };
+    const res = await fetch("/api/documents/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        templateId: selectedTemplate.id,
+        ownerId,
+        title,
+        values,
+      }),
+    });
 
-    return (
-        <div className="p-6 space-y-6">
-            <h1 className="text-2xl font-bold">Create Document</h1>
+    const data = await res.json();
+    if (data.success) router.push(`/private/documents/${data.id}`);
+    else alert("Failed to create document");
+  };
 
-            <select
-                value={selectedTemplate?.id || ""}
-                onChange={e => {
-                    const t = templates.find(t => t.id === Number(e.target.value)) || null;
-                    setSelectedTemplate(t);
-                    setValues({});
-                }}
-                className="border p-2"
-            >
-                <option value="">Select template</option>
-                {templates.map(t => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
-            </select>
+  const handleSelect = useCallback((id: number | null) => {
+    setSelectedId(id);
+    setValues({});
+  }, []);
 
-            {selectedTemplate?.json_schema && (
-                <DynamicForm
-                    template={selectedTemplate.json_schema}
-                    values={values}
-                    onChange={handleChange}
-                />
-            )}
+  return (
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold">Create Document</h1>
 
-            <button onClick={handleSubmit} className="btn mt-2">Create Document</button>
-        </div>
-    );
-}
+      <TemplateSelector
+        templates={templates.map(t => ({ id: t.id, name: t.name }))}
+        selectedId={selectedId}
+        onSelect={handleSelect}
+      />
 
-interface DynamicFormProps {
-    template: DocumentTemplate;
-    values: Record<string, any>;
-    onChange: (id: string, value: any) => void;
-}
+      {selectedTemplate?.json_schema && (
+        <DynamicForm
+          template={selectedTemplate.json_schema}
+          values={values}
+          onChange={handleChange}
+        />
+      )}
 
-const DynamicForm: React.FC<DynamicFormProps> = ({ template, values, onChange }) => {
-    return (
-        <div className="border p-4 space-y-2 bg-gray-50">
-            {template.elements.map(el => {
-                if (el.type === 'text') {
-                    return (
-                        <input
-                            key={el.id}
-                            placeholder={el.placeholder}
-                            value={values[el.id] || ''}
-                            onChange={e => onChange(el.id, e.target.value)}
-                            className="border p-2 w-full"
-                        />
-                    );
-                }
-                if (el.type === 'textarea') {
-                    return (
-                        <textarea
-                            key={el.id}
-                            placeholder={el.placeholder}
-                            value={values[el.id] || ''}
-                            onChange={e => onChange(el.id, e.target.value)}
-                            className="border p-2 w-full"
-                        />
-                    );
-                }
-                if (el.type === 'signature') {
-                    return (
-                        <div key={el.id} className="border h-24 w-full bg-gray-100 text-center flex items-center justify-center">
-                            Sign Here
-                        </div>
-                    );
-                }
-                return null;
-            })}
-        </div>
-    );
+      <button onClick={handleSubmit} className="btn mt-2">
+        Create Document
+      </button>
+    </div>
+  );
 };

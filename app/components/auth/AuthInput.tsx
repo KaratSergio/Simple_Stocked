@@ -1,5 +1,4 @@
 'use client';
-
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 
 interface AuthInputProps {

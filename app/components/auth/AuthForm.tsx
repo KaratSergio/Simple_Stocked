@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import AuthWrapper from './AuthWrapper';
-import AuthToggle from './AuthToggle';
 import AuthInput from './AuthInput';
 
 type FormData = {
@@ -28,17 +27,33 @@ export default function AuthForm() {
             body: JSON.stringify(data),
         });
 
-        // const json = await res.json();
-
         if (res.ok) {router.push('/page/dashboard')}
 
         reset();
     };
 
+  const switchMode = (mode: 'login' | 'register') => {
+    setMode(mode);
+    reset();
+  };
+
     return (
         <AuthWrapper>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-72 text-white">
-                <AuthToggle mode={mode} setMode={setMode} reset={reset} />
+
+              <div className="flex justify-center gap-4 mb-2">
+                {(['login', 'register'] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => switchMode(m)}
+                    className={`px-4 py-1 rounded-full text-sm transition-all duration-300 ease-in-out transform hover:scale-105
+                         ${mode === m ? 'bg-white text-gray-800' : 'bg-gray-600/50'}`}
+                  >
+                    {m === 'login' ? 'Login' : 'Register'}
+                  </button>
+                ))}
+              </div>
 
                 <AuthInput
                     placeholder="Email"

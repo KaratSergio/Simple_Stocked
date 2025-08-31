@@ -1,10 +1,7 @@
-'use client';
-import { useState } from "react";
 import Link from "next/link";
 import { DocumentList } from "@/components/documents";
 
 export default function DocumentsPage() {
-    const [documents, setDocuments] = useState<any[]>([]);
     const ownerId = 5; // TO DO hardcode need to change
 
     return (
@@ -18,11 +15,7 @@ export default function DocumentsPage() {
 
             {/* doc list */}
             <div className="mt-4">
-                <DocumentList
-                    ownerId={ownerId}
-                    documents={documents}
-                    onDocumentsChange={setDocuments} // refresh doc
-                />
+                <DocumentList ownerId={ownerId}/>
             </div>
         </div>
     );

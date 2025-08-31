@@ -5,12 +5,11 @@ import { useRouter } from 'next/navigation';
 
 interface DocumentListProps {
     ownerId: number;
-    documents: any[];
-    onDocumentsChange: (docs: any[]) => void; // for refresh list
 }
 
-export const DocumentList: FC<DocumentListProps> = ({ ownerId, documents, onDocumentsChange }) => {
+export const DocumentList: FC<DocumentListProps> = ({ ownerId }) => {
     const [loading, setLoading] = useState(false);
+    const [documents, setDocuments] = useState<any[]>([]);
     const router = useRouter();
 
     const fetchDocuments = async () => {
@@ -18,13 +17,13 @@ export const DocumentList: FC<DocumentListProps> = ({ ownerId, documents, onDocu
         try {
             const res = await fetch(`/api/documents/list?ownerId=${ownerId}`);
             const data = await res.json();
-            if (data.success) onDocumentsChange(data.data);
+            if (data.success) setDocuments(data.data);
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => { fetchDocuments() }, [ownerId]);
+    useEffect(() => { void fetchDocuments() }, [ownerId]);
 
     if (loading) return <p>Loading documents...</p>;
     if (!documents.length) return <p>No documents found.</p>;
