@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { TemplateSelector } from "../templates";
+import { TemplateSelect } from "../templates";
 import { DynamicForm } from "./DynamicForm";
 
 interface Template {
@@ -70,7 +70,7 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Create Document</h1>
 
-      <TemplateSelector
+      <TemplateSelect
         templates={templates.map(t => ({ id: t.id, name: t.name }))}
         selectedId={selectedId}
         onSelect={handleSelect}

@@ -64,25 +64,34 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
     };
 
     return (
-        <div className="p-6 space-y-4">
+        <div className="flex">
             <TemplateEditor initialData={editorData} onChange={setEditorData} />
 
+          <div className="flex flex-col">
             <input
-                type="file"
-                accept="application/pdf"
-                onChange={e => setPdfFile(e.target.files?.[0] || null)}
-                className="border p-2 w-full bg-gray-100 text-black"
+              type="file"
+              accept="application/pdf"
+              onChange={e => setPdfFile(e.target.files?.[0] || null)}
+              className="border p-2 w-full bg-gray-100 text-black"
             />
 
-            {(pdfFile || currentPdfUrl) && (
-                <div className="mt-2 border w-full h-[300px]">
-                    <embed src={pdfFile ? URL.createObjectURL(pdfFile) : currentPdfUrl || ""} type="application/pdf" width="100%" height="100%" />
-                </div>
-            )}
-
-            <button onClick={handleSave} disabled={loading} className="btn mt-2">
-                {loading ? "Saving..." : templateId ? "Update" : "Create"}
+            <button onClick={handleSave} disabled={loading} className='py-1 border-x cursor-pointer'>
+              {loading ? "Saving..." : templateId ? "Update" : "Create"}
             </button>
+
+            <div className="border w-[600px] h-[700px] flex items-center justify-center bg-gray-50">
+              {pdfFile || currentPdfUrl ? (
+                <embed
+                  src={pdfFile ? URL.createObjectURL(pdfFile) : currentPdfUrl || ""}
+                  type="application/pdf"
+                  width="100%"
+                  height="100%"
+                />
+              ) : (
+                <p className="text-gray-400">No PDF selected</p>
+              )}
+            </div>
+          </div>
         </div>
     );
 };

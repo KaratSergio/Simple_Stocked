@@ -14,7 +14,7 @@ export const SignatureAdd = ({ documentId, recipientId }: { documentId: number, 
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ documentId, recipientId, signatureData }),
             });
-            const data = await res.json();
+            await res.json();
             alert("Signature saved!");
         } catch (err) {
             console.error(err);

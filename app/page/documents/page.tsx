@@ -9,7 +9,7 @@ export default function DocumentsPage() {
             <h1 className="text-2xl font-bold">Documents</h1>
 
             {/* create doc */}
-            <Link href="app/page/documents/create" className="btn">
+            <Link href="/page/documents/create" className="btn">
                 Create Document
             </Link>
 

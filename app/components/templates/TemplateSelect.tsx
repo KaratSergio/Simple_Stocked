@@ -4,7 +4,7 @@ interface TemplateSelectorProps {
   onSelect: (id: number | null) => void;
 }
 
-export const TemplateSelector = ({ templates, selectedId, onSelect }: TemplateSelectorProps) => (
+export const TemplateSelect = ({ templates, selectedId, onSelect }: TemplateSelectorProps) => (
   <select
     value={selectedId ?? ""}
     onChange={e => {

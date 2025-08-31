@@ -1,4 +1,5 @@
 "use client";
+import {FC} from "react";
 import { useState } from "react";
 
 interface RecipientAddProps {
@@ -6,7 +7,7 @@ interface RecipientAddProps {
     onAdd?: (recipient: any) => void;
 }
 
-export const RecipientAdd: React.FC<RecipientAddProps> = ({ documentId, onAdd }) => {
+export const RecipientAdd: FC<RecipientAddProps> = ({ documentId, onAdd }) => {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
 

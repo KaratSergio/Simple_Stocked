@@ -47,7 +47,7 @@ export const TemplateEditor = ({ initialData, onChange }: TemplateEditorProps) =
     };
 
     return (
-        <div className="p-6 space-y-4">
+        <div className="">
             {/* Header: name */}
             <div className="flex items-center space-x-2">
                 <input
@@ -59,14 +59,14 @@ export const TemplateEditor = ({ initialData, onChange }: TemplateEditorProps) =
             </div>
 
             {/* Add elements */}
-            <div className="flex space-x-2 mb-4">
-                <button onClick={() => addElement('text')} className="btn">Text</button>
-                <button onClick={() => addElement('textarea')} className="btn">Textarea</button>
-                <button onClick={() => addElement('signature')} className="btn">Signature</button>
+            <div className="flex border-r">
+                <button onClick={() => addElement('text')} className="border-l py-1 px-2 cursor-pointer">Text</button>
+                <button onClick={() => addElement('textarea')} className="border-x py-1 px-2 cursor-pointer">Textarea</button>
+                <button onClick={() => addElement('signature')} className="border-r py-1 px-2 cursor-pointer">Signature</button>
             </div>
 
             {/* Canvas */}
-            <div className="border w-[600px] h-[800px] relative bg-white">
+            <div className="border w-[600px] h-[700px] relative bg-white">
                 {elements.map(el => (
                     <Rnd
                         key={el.id}
