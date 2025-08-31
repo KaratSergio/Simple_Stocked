@@ -1,31 +1,26 @@
 import * as userRepo from '@/server/data/repo/user.repository';
 import { hashPassword, verifyPassword } from '@/server/utils/password';
-import { generateAccessToken, generateRefreshToken } from '@/server/utils/jwt';
-import type { RegistrationDTO, LoginDTO, UserWithTokens } from '@/server/types/user.types';
+import type { RegistrationDTO, LoginDTO, User } from '@/server/types/user.types';
 
-// registration user + hash pass
-export async function registerUser({ email, name, password }: RegistrationDTO):
-    Promise<UserWithTokens> {
-    const passwordHash = await hashPassword(password);
-    const user = await userRepo.createUser(email, name, passwordHash);
-
-    const accessToken = generateAccessToken({ userId: user.id });
-    const refreshToken = generateRefreshToken({ userId: user.id });
-
-    return { ...user, accessToken, refreshToken };
+/**
+ * Creates a user - returns only the entity (no tokens, no password).
+ */
+export async function registerUser({ email, name, password }: RegistrationDTO): Promise<User> {
+  const passwordHash = await hashPassword(password);
+  return userRepo.createUser(email, name, passwordHash);
 }
 
-// login user + verify pass
-export async function loginUser({ email, password }: LoginDTO):
-    Promise<UserWithTokens | null> {
-    const user = await userRepo.getUserByEmail(email);
-    if (!user) return null;
+/**
+ * Login: checks the password, returns user (without password_hash) or null.
+ */
+export async function loginUser({ email, password }: LoginDTO): Promise<User | null> {
+  const dbUser = await userRepo.getUserByEmail(email);
+  if (!dbUser) return null;
 
-    const valid = await verifyPassword(user.password_hash, password);
-    if (!valid) return null;
+  const valid = await verifyPassword(dbUser.password_hash, password);
+  if (!valid) return null;
 
-    const accessToken = generateAccessToken({ userId: user.id });
-    const refreshToken = generateRefreshToken({ userId: user.id });
-
-    return { ...user, accessToken, refreshToken };
+  // sanitize — убираем password_hash
+  const { id, email: userEmail, name, created_at } = dbUser;
+  return { id, email: userEmail, name, created_at } as User;
 }

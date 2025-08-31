@@ -1,21 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "@/server/utils/jwt";
+import * as userController from "@/server/controllers/user.controller";
 import { setAuthCookies } from "@/server/utils/cookies";
 
 export async function POST(req: NextRequest) {
-    const refreshToken = req.cookies.get("refreshToken")?.value;
-    if (!refreshToken) return NextResponse.json({ error: "No refresh token" }, { status: 401 });
+  const oldRefreshToken = req.cookies.get("refreshToken")?.value;
+  if (!oldRefreshToken) {
+    return NextResponse.json({ error: "No refresh token provided" }, { status: 401 });
+  }
 
-    const payload = verifyRefreshToken(refreshToken);
-    if (!payload) {
-        // if the token is invalid - logout
-        return NextResponse.json({ error: "Invalid refresh token" }, { status: 401 });
-    }
-
-    const newAccess = generateAccessToken({ userId: payload.userId });
-    const newRefresh = generateRefreshToken({ userId: payload.userId });
+  try {
+    const tokens = await userController.refresh(
+      oldRefreshToken,
+      req.headers.get("user-agent") || undefined,
+      req.ip
+    );
 
     const res = NextResponse.json({ ok: true });
-    setAuthCookies(res, newAccess, newRefresh);
+    setAuthCookies(res, tokens.accessToken, tokens.refreshToken);
     return res;
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 401 });
+  }
 }
+
+

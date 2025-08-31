@@ -36,3 +36,9 @@ export async function deleteExpiredTokens() {
   const sql = loadQuery('deleteExpired.sql');
   await query(sql);
 }
+
+export async function getAllTokensByUser(userId: number) {
+  const sql = loadQuery("getAllByUser.sql");
+  const res = await query(sql, [userId]);
+  return res.rows;
+}
