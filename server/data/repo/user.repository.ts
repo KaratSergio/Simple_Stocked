@@ -1,29 +1,22 @@
+import fs from 'fs';
+import path from 'path';
 import { query } from '@/server/config/db.config';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import type { User } from '@/server/types/user.types';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const basePath = path.join(process.cwd(), 'server/data/sql/queries/users');
 
-const sqlFilePath = path.join(__dirname, '../sql/queries/users.sql');
-const sqlFile = fs.readFileSync(sqlFilePath, 'utf-8');
-
-const [createUserSQLRaw, getUserByEmailSQLRaw] = sqlFile
-    .split(';')
-    .map(q => q.trim())
-    .filter(Boolean);
-
-const createUserSQL = createUserSQLRaw + ';';
-const getUserByEmailSQL = getUserByEmailSQLRaw + ';';
-
-export async function createUser(email: string, name: string, passwordHash: string) {
-    const result = await query(createUserSQL, [email, name, passwordHash]);
-    return result.rows[0];
+function loadQuery(name: string) {
+  return fs.readFileSync(path.join(basePath, name), 'utf8');
 }
 
-export async function getUserByEmail(email: string) {
-    const result = await query(getUserByEmailSQL, [email]);
-    return result.rows[0];
+export async function createUser(email: string, name: string, passwordHash: string): Promise<User> {
+  const sql = loadQuery('create.sql');
+  const result = await query(sql, [email, name, passwordHash]);
+  return result.rows[0];
+}
+
+export async function getUserByEmail(email: string): Promise<User | null> {
+  const sql = loadQuery('getByEmail.sql');
+  const result = await query(sql, [email]);
+  return result.rows[0] ?? null;
 }

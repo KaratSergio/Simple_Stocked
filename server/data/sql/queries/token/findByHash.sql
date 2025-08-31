@@ -1,0 +1,1 @@
+SELECT * FROM user_refresh_tokens WHERE token_hash = $1 LIMIT 1;

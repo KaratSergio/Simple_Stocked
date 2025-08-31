@@ -9,14 +9,14 @@ export interface LoginDTO {
     password: string;
 }
 
-export interface UserResponse {
+export interface User {
     id: number;
     email: string;
     name: string;
     created_at: string;
 }
 
-export interface UserWithTokens extends UserResponse {
+export interface UserWithTokens extends User {
     accessToken: string;
     refreshToken: string;
 }

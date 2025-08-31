@@ -1,0 +1,1 @@
+DELETE FROM user_refresh_tokens WHERE expires_at < NOW();

@@ -1,0 +1,1 @@
+UPDATE user_refresh_tokens SET revoked = TRUE WHERE user_id = $1 RETURNING *;
