@@ -16,78 +16,78 @@ export function generateAccessToken(userId: number) {
 
 // ---------------- REFRESH ----------------
 
-// Generate raw token
 export function generateRawRefreshToken() {
   return randomBytes(40).toString("hex");
 }
 
-// Hashing the token for storage in the DB
 export async function hashRefreshToken(rawToken: string) {
   return await argon2.hash(rawToken, { type: argon2.argon2id });
 }
 
-// JWT inside refresh token
-export function generateRefreshJWT(userId: number) {
-  return jwt.sign({ userId }, REFRESH_SECRET, { expiresIn: `${REFRESH_EXPIRES_DAYS}d` });
-}
-
-// Checking the JWT refresh tokenа
 export function verifyRefreshJWT(token: string): { userId: number } | null {
   try {
     return jwt.verify(token, REFRESH_SECRET) as { userId: number };
-  } catch {
+  } catch (err) {
     return null;
   }
 }
 
 // ---------------- OPERATIONS ----------------
 
-// Issue new tokens
 export async function issueTokens(userId: number, deviceInfo?: string, ip?: string) {
   const accessToken = generateAccessToken(userId);
   const rawRefresh = generateRawRefreshToken();
   const refreshHash = await hashRefreshToken(rawRefresh);
 
   const expiresAt = new Date(Date.now() + REFRESH_EXPIRES_DAYS * 24 * 60 * 60 * 1000);
+
   await refreshRepo.storeRefreshToken(userId, refreshHash, expiresAt, deviceInfo, ip);
 
-  // We give the client a raw token, and the hash is stored in the DB
   return { accessToken, refreshToken: rawRefresh };
 }
 
-// Rotate refresh token
 export async function rotateRefreshToken(userId: number, oldRawRefresh: string, deviceInfo?: string, ip?: string) {
   const allTokens = await refreshRepo.getAllTokensByUser(userId);
 
-  const matched = allTokens.find(
-    t => !t.revoked && new Date(t.expires_at) > new Date() && argon2.verify(t.token_hash, oldRawRefresh)
-  );
+  let matched = null;
+  for (const t of allTokens) {
+    if (t.revoked || new Date(t.expires_at) <= new Date()) continue;
 
-  if (!matched) throw new Error("Invalid or expired refresh token");
+    const ok = await argon2.verify(t.token_hash, oldRawRefresh).catch(() => false);
+    if (ok) {
+      matched = t;
+      break;
+    }
+  }
+
+  if (!matched) {
+    throw new Error("Invalid or expired refresh token");
+  }
 
   await refreshRepo.revokeRefreshTokenByHash(matched.token_hash);
 
   return issueTokens(userId, deviceInfo, ip);
 }
 
-// Revoke single refresh token
 export async function revokeRefreshToken(userId: number, rawToken: string) {
   const allTokens = await refreshRepo.getAllTokensByUser(userId);
+
   const matched = await Promise.all(
-    allTokens.map(async t => (await argon2.verify(t.token_hash, rawToken)) ? t : null)
+    allTokens.map(async t => (await argon2.verify(t.token_hash, rawToken).catch(() => false)) ? t : null)
   ).then(r => r.find(Boolean));
 
-  if (!matched) throw new Error("Refresh token not found");
+  if (!matched) {
+    throw new Error("Refresh token not found");
+  }
 
   return refreshRepo.revokeRefreshTokenByHash(matched.token_hash);
 }
 
-// Revoke all tokens for user
 export async function revokeAllUserTokens(userId: number) {
   return refreshRepo.revokeAllTokensForUser(userId);
 }
 
-// Cleanup expired tokens
 export async function deleteExpiredTokens() {
   return refreshRepo.deleteExpiredTokens();
 }
+

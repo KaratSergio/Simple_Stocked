@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { query } from '@/server/config/db.config';
 
-const basePath = path.join(process.cwd(), 'server/data/sql/queries/user_refresh_tokens');
+const basePath = path.join(process.cwd(), 'server/data/sql/queries/token');
 
 function loadQuery(name: string) {
   return fs.readFileSync(path.join(basePath, name), 'utf8');

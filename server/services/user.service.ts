@@ -20,7 +20,7 @@ export async function loginUser({ email, password }: LoginDTO): Promise<User | n
   const valid = await verifyPassword(dbUser.password_hash, password);
   if (!valid) return null;
 
-  // sanitize — убираем password_hash
+  // sanitize — removed password_hash
   const { id, email: userEmail, name, created_at } = dbUser;
   return { id, email: userEmail, name, created_at } as User;
 }

@@ -1,7 +1,6 @@
 {
   "name": "my-fullstack-app",
   "version": "1.0.0",
-  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3822",
