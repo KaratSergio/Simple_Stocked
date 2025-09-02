@@ -1,15 +1,25 @@
 const BASE_URL = 'http://localhost:3822/api/auth';
 
+/**
+ * Extracting a specific cookie from set-cookie
+ */
+function extractCookie(setCookieHeader: string, key: string) {
+  const match = setCookieHeader.match(new RegExp(`${key}=([^;]+)`));
+  return match ? `${key}=${match[1]}` : null;
+}
+
 describe('Full Auth Flow', () => {
   let email: string;
   const password = '12345678';
   const name = 'Test User';
-  let cookies: string | null = null;
+  let accessTokenCookie: string = '';
+  let refreshTokenCookie: string = '';
 
   beforeAll(() => {
     email = `test${Date.now()}@example.com`;
   });
 
+  // ---------------- REGISTER ----------------
   test('Register new user', async () => {
     const res = await fetch(`${BASE_URL}/register`, {
       method: 'POST',
@@ -18,13 +28,27 @@ describe('Full Auth Flow', () => {
     });
 
     const data = await res.json();
+    const setCookie = res.headers.get('set-cookie') || '';
+
+    // take out the cookies
+    accessTokenCookie = extractCookie(setCookie, 'accessToken')!;
+    refreshTokenCookie = extractCookie(setCookie, 'refreshToken')!;
+
+    console.log('--- REGISTER ---');
+    console.log('Status:', res.status);
+    console.log('Body:', data);
+    console.log('Set-Cookie:', setCookie);
+
     expect(res.status).toBe(201);
     expect(data).toHaveProperty('id');
     expect(data).toHaveProperty('email', email);
     expect(data).toHaveProperty('name', name);
+    expect(accessTokenCookie).toBeTruthy();
+    expect(refreshTokenCookie).toBeTruthy();
   });
 
-  test('Login user and set cookies', async () => {
+  // ---------------- LOGIN ----------------
+  test('Login user and get cookies', async () => {
     const res = await fetch(`${BASE_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -32,44 +56,75 @@ describe('Full Auth Flow', () => {
     });
 
     const data = await res.json();
-    cookies = res.headers.get('set-cookie');
+    const setCookie = res.headers.get('set-cookie') || '';
+
+    accessTokenCookie = extractCookie(setCookie, 'accessToken')!;
+    refreshTokenCookie = extractCookie(setCookie, 'refreshToken')!;
+
+    console.log('--- LOGIN ---');
+    console.log('Status:', res.status);
+    console.log('Body:', data);
+    console.log('Set-Cookie:', setCookie);
 
     expect(res.status).toBe(200);
     expect(data).toHaveProperty('id');
-    expect(cookies).toBeDefined();
-    expect(cookies).toContain('accessToken');
-    expect(cookies).toContain('refreshToken');
+    expect(data).toHaveProperty('email', email);
+    expect(data).toHaveProperty('name', name);
+    expect(accessTokenCookie).toBeTruthy();
+    expect(refreshTokenCookie).toBeTruthy();
   });
 
+  // ---------------- REFRESH ----------------
   test('Refresh token', async () => {
-    if (!cookies) throw new Error('No cookies from login');
-
     const res = await fetch(`${BASE_URL}/refresh`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Cookie': cookies },
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': refreshTokenCookie,
+      },
     });
 
     const data = await res.json();
-    const newCookies = res.headers.get('set-cookie');
+    const setCookie = res.headers.get('set-cookie') || '';
+
+    // обновляем куки
+    accessTokenCookie = extractCookie(setCookie, 'accessToken')!;
+    refreshTokenCookie = extractCookie(setCookie, 'refreshToken')!;
+
+    console.log('--- REFRESH ---');
+    console.log('Status:', res.status);
+    console.log('Body:', data);
+    console.log('Set-Cookie:', setCookie);
 
     expect(res.status).toBe(200);
-    expect(data).toHaveProperty('id');
-    expect(newCookies).toBeDefined();
-    expect(newCookies).toContain('accessToken');
+    expect(data).toHaveProperty('ok', true);
+    expect(accessTokenCookie).toBeTruthy();
+    expect(refreshTokenCookie).toBeTruthy();
   });
 
+  // ---------------- LOGOUT ----------------
   test('Logout user', async () => {
-    if (!cookies) throw new Error('No cookies from login');
+    if (!refreshTokenCookie) throw new Error('No refresh token for logout test');
 
     const res = await fetch(`${BASE_URL}/logout`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Cookie': cookies },
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': refreshTokenCookie,
+      },
     });
 
-    const newCookies = res.headers.get('set-cookie');
+    const data = await res.json();
+    const clearedCookies = res.headers.get('set-cookie') || '';
+
+    console.log('--- LOGOUT ---');
+    console.log('Status:', res.status);
+    console.log('Body:', data);
+    console.log('Cleared-Cookies:', clearedCookies);
 
     expect(res.status).toBe(200);
-    expect(newCookies).toContain('accessToken='); // Обнуляем cookie
-    expect(newCookies).toContain('refreshToken=');
+    expect(data).toHaveProperty('ok', true);
+    expect(clearedCookies).toContain('accessToken=');
+    expect(clearedCookies).toContain('refreshToken=');
   });
 });

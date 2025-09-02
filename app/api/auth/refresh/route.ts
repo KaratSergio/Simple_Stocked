@@ -5,6 +5,9 @@ import { getRequestInfo } from "@/server/utils/requestInfo";
 
 export async function POST(req: NextRequest) {
   const oldRefreshToken = req.cookies.get("refreshToken")?.value;
+
+  console.log('res', oldRefreshToken)
+
   if (!oldRefreshToken) return NextResponse.json({ error: "No refresh token provided" }, { status: 401 });
 
   const { ip, deviceInfo } = getRequestInfo(req);

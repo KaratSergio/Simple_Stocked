@@ -65,6 +65,7 @@ export async function logout(userId: number, rawRefreshToken: string, deviceInfo
  */
 export async function refresh(oldRefreshToken: string, deviceInfo?: string, ip?: string) {
   const payload = authService.verifyRefreshJWT(oldRefreshToken);
+
   if (!payload?.userId) {
     await logAuthEvent("failed_refresh", null, { ip, deviceInfo });
     throw new Error("Invalid refresh token");

@@ -25,6 +25,7 @@ export default function AuthForm() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
+            credentials: 'include',
         });
 
         if (res.ok) {router.push('/page/dashboard')}

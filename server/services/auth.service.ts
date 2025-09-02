@@ -16,8 +16,9 @@ export function generateAccessToken(userId: number) {
 
 // ---------------- REFRESH ----------------
 
-export function generateRawRefreshToken() {
-  return randomBytes(40).toString("hex");
+export function generateRefreshToken(userId: number) {
+  // JWT вместо raw random token
+  return jwt.sign({ userId }, REFRESH_SECRET, { expiresIn: `${REFRESH_EXPIRES_DAYS}d` });
 }
 
 export async function hashRefreshToken(rawToken: string) {
@@ -36,33 +37,27 @@ export function verifyRefreshJWT(token: string): { userId: number } | null {
 
 export async function issueTokens(userId: number, deviceInfo?: string, ip?: string) {
   const accessToken = generateAccessToken(userId);
-  const rawRefresh = generateRawRefreshToken();
-  const refreshHash = await hashRefreshToken(rawRefresh);
+  const refreshToken = generateRefreshToken(userId);
 
+  const refreshHash = await hashRefreshToken(refreshToken);
   const expiresAt = new Date(Date.now() + REFRESH_EXPIRES_DAYS * 24 * 60 * 60 * 1000);
 
   await refreshRepo.storeRefreshToken(userId, refreshHash, expiresAt, deviceInfo, ip);
 
-  return { accessToken, refreshToken: rawRefresh };
+  return { accessToken, refreshToken };
 }
+
 
 export async function rotateRefreshToken(userId: number, oldRawRefresh: string, deviceInfo?: string, ip?: string) {
   const allTokens = await refreshRepo.getAllTokensByUser(userId);
 
-  let matched = null;
-  for (const t of allTokens) {
-    if (t.revoked || new Date(t.expires_at) <= new Date()) continue;
+  const matched = await Promise.all(
+    allTokens.map(async t => (t.revoked || new Date(t.expires_at) <= new Date()) ? null :
+      await argon2.verify(t.token_hash, oldRawRefresh).then(ok => ok ? t : null)
+    )
+  ).then(r => r.find(Boolean));
 
-    const ok = await argon2.verify(t.token_hash, oldRawRefresh).catch(() => false);
-    if (ok) {
-      matched = t;
-      break;
-    }
-  }
-
-  if (!matched) {
-    throw new Error("Invalid or expired refresh token");
-  }
+  if (!matched) throw new Error("Refresh token revoked or expired");
 
   await refreshRepo.revokeRefreshTokenByHash(matched.token_hash);
 

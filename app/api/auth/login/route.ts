@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
     const user = await userController.login(body, deviceInfo, ip);
 
-    const res = NextResponse.json({ userId: user.id, name: user.name, email: user.email });
+    const res = NextResponse.json({ id: user.id, name: user.name, email: user.email });
     setAuthCookies(res, user.accessToken, user.refreshToken);
     return res;
   } catch (err: any) {
