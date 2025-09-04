@@ -25,7 +25,7 @@ interface DocumentElement {
 export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [title] = useState("");
+  const [title, setTitle] = useState("");
   const [values, setValues] = useState<Record<string, any>>({});
   const router = useRouter();
 
@@ -69,6 +69,14 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Create Document</h1>
+
+      <input
+        type="text"
+        placeholder="Document title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="input"
+      />
 
       <TemplateSelect
         templates={templates.map(t => ({ id: t.id, name: t.name }))}

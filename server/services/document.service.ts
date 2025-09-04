@@ -1,7 +1,14 @@
 import * as docRepo from "@/server/data/repo/document.repository";
 import * as recipientRepo from "@/server/data/repo/recipient.repository";
+import * as templateRepo from "@/server/data/repo/template.repository";
 import { Document } from "@/server/types/document.types";
 import { Recipient } from "@/server/types/recipient.types";
+import { generatePdf } from "@/server/utils/pdfGenerator";
+import { uploadFile } from "@/server/utils/s3Storage";
+
+export async function uploadPdf(bytes: Uint8Array, key: string) {
+    return uploadFile(bytes, key, "application/pdf");
+}
 
 export async function createDocument(
     templateId: number,
@@ -13,7 +20,17 @@ export async function createDocument(
     if (!ownerId) throw new Error("Owner ID is required");
     if (!values) throw new Error("Document values are required");
 
-    return docRepo.createDocument(templateId, ownerId, title, values, null, "draft");
+    const template = await templateRepo.getTemplateById(templateId);
+    if (!template) throw new Error("Template not found");
+
+    // PDF
+    const pdfBytes = await generatePdf(template.json_schema, values, template.pdf_base);
+
+    // S3
+    const key = `documents/${ownerId}/${Date.now()}.pdf`;
+    const pdfUrl = await uploadPdf(pdfBytes, key);
+
+    return docRepo.createDocument(templateId, ownerId, title, values, pdfUrl, "draft");
 }
 
 export async function getDocumentById(id: number): Promise<Document | null> {
