@@ -57,7 +57,10 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
     });
 
     const data = await res.json();
-    if (data.success) router.push(`/private/documents/${data.id}`);
+    console.log('====================================');
+    console.log("data", data);
+    console.log('====================================');
+    if (data.success) router.push(`/page/documents/${data.data.id}`);
     else alert("Failed to create document");
   };
 

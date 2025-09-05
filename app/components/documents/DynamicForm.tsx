@@ -16,7 +16,7 @@ interface DynamicFormProps {
   onChange: (id: string, value: any) => void;
 }
 
-export const DynamicForm = ({template, values, onChange}: DynamicFormProps) => (
+export const DynamicForm = ({ template, values, onChange }: DynamicFormProps) => (
   <div className="border p-4 space-y-2 bg-gray-50">
     {template.elements.map(el => {
       if (el.type === 'text') {

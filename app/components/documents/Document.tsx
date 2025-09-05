@@ -44,5 +44,5 @@ export const Document = ({ documentId }: DocumentProps) => {
                 className="border"
             />
         </div>
-    );
+    )
 };

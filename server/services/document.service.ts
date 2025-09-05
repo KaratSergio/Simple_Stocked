@@ -30,8 +30,11 @@ export async function createDocument(
     const key = `documents/${ownerId}/${Date.now()}.pdf`;
     const pdfUrl = await uploadPdf(pdfBytes, key);
 
-    return docRepo.createDocument(templateId, ownerId, title, values, pdfUrl, "draft");
+    const doc = await docRepo.createDocument(templateId, ownerId, title, values, pdfUrl, "draft");
+
+    return doc;
 }
+
 
 export async function getDocumentById(id: number): Promise<Document | null> {
     if (!id) throw new Error("Document ID is required");
