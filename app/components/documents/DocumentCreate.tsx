@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { TemplateSelect } from "../templates";
 import { DynamicForm } from "./DynamicForm";
-import { Template } from "./types";
+import { Template } from "../templates/types";
 
 export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
   const [templates, setTemplates] = useState<Template[]>([]);

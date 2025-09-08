@@ -1,42 +1,34 @@
-// List
-export interface DocumentListProps {
-    ownerId: number;
-}
+import { DocumentTemplate } from "../templates/types";
 
-// Document
+// ============================
+// Documents & Lists
+// ============================
 export interface DocumentType {
     id: string;
     title: string;
-    pdf_generated: string;
+    pdf_generated: string; // URL or path to generated PDF
 }
 
 export interface DocumentProps {
     documentId: string;
 }
 
-// Create
-
-export interface Template {
-    id: number;
-    name: string;
-    json_schema?: DocumentTemplate;
+export interface DocumentListProps {
+    ownerId: number;
 }
 
-export interface DocumentTemplate {
-    elements: DocumentElement[];
-    pageWidth: number;
-    pageHeight: number;
-}
-
-export interface DocumentElement {
-    id: string;
-    type: "text" | "textarea" | "signature";
-    placeholder?: string;
-}
-
+// ============================
 // Dynamic Form
+// ============================
+
+// Field value can be a string or null (not signed yet)
+export type FieldValue = string | null;
+
+// Values of the document by element ID
+export type DocumentValues = Record<string, FieldValue>;
+
 export interface DynamicFormProps {
-    template: DocumentTemplate;
-    values: Record<string, any>;
-    onChange: (id: string, value: any) => void;
+    template: DocumentTemplate;       // template to render
+    values: DocumentValues;           // current field values
+    onChange: (id: string, value: FieldValue) => void; // called when a field changes
 }

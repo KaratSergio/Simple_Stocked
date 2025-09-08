@@ -4,7 +4,7 @@ export const TemplateEditor = <Data extends TemplateData = TemplateData>({
     initialData,
     onChange,
 }: TemplateEditorProps<Data>): Data => {
-    const defaultElement: DocumentElement = { id: 'textarea_1', type: 'textarea', placeholder: 'Document text' };
+    const defaultElement: DocumentElement = { id: 'textarea_1', type: 'textarea' };
 
     const templateData = {
         name: initialData?.name ?? '',
