@@ -4,11 +4,7 @@ import * as templateRepo from "@/server/data/repo/template.repository";
 import { Document } from "@/server/types/document.types";
 import { Recipient } from "@/server/types/recipient.types";
 import { generatePdf } from "@/server/utils/pdfGenerator";
-import { uploadFile } from "@/server/utils/s3Storage";
-
-export async function uploadPdf(bytes: Uint8Array, key: string) {
-    return uploadFile(bytes, key, "application/pdf");
-}
+import { uploadPdf } from "@/server/utils/s3Storage";
 
 export async function createDocument(
     templateId: number,
@@ -34,7 +30,6 @@ export async function createDocument(
 
     return doc;
 }
-
 
 export async function getDocumentById(id: number): Promise<Document | null> {
     if (!id) throw new Error("Document ID is required");

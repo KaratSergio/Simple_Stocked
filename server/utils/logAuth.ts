@@ -6,8 +6,9 @@ export async function logAuthEvent(
   extra?: { ip?: string; deviceInfo?: string }
 ) {
   const timestamp = new Date().toISOString();
+
   console.log(`[AUTH][${timestamp}] ${event}${userId ? `: user ${userId}` : ""}`, extra ?? {});
 
-  // сохраняем в БД
+  // save to DB
   await authLogRepo.createAuthLog(userId ?? null, event, extra?.ip, extra?.deviceInfo);
 }

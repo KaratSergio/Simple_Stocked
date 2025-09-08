@@ -9,7 +9,7 @@ export default function MainPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && isLoggedIn) router.push("/page/dashboard");
+    if (!loading && isLoggedIn) router.push("/page");
   }, [loading, isLoggedIn, router]);
 
   if (loading || isLoggedIn) return <div>Loading...</div>;

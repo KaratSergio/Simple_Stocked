@@ -13,3 +13,7 @@ export async function uploadFile(buffer: Buffer | Uint8Array, key: string, conte
 
     return `https://${process.env.S3_BUCKET}.r2.cloudflarestorage.com/${key}`;
 }
+
+export async function uploadPdf(bytes: Uint8Array, key: string) {
+    return uploadFile(bytes, key, "application/pdf");
+}

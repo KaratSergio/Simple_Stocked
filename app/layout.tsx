@@ -2,8 +2,8 @@ import './shared/styles/globals.css';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'DocSP',
-  description: 'Example app',
+  title: 'Doc SP',
+  description: 'Document Signing Platform (DSP-service)',
   icons: {
     icon: '/favicon.ico',
   },
