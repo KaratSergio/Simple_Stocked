@@ -1,8 +1,4 @@
-interface TemplateSelectorProps {
-  templates: { id: number; name: string }[];
-  selectedId: number | null;
-  onSelect: (id: number | null) => void;
-}
+import { TemplateSelectorProps } from "./types";
 
 export const TemplateSelect = ({ templates, selectedId, onSelect }: TemplateSelectorProps) => (
   <select

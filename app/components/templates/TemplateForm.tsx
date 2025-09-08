@@ -1,11 +1,7 @@
 'use client';
 import { useState, useEffect } from "react";
-import { TemplateEditor, TemplateData } from "./TemplateEditor";
-
-interface TemplateFormProps {
-  templateId?: string;
-  onSaved?: (data: any) => void;
-}
+import { TemplateEditor } from "./TemplateEditor";
+import { TemplateData, TemplateFormProps } from "./types";
 
 export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
   const [editorData, setEditorData] = useState<TemplateData>({ name: "", elements: [] });
@@ -80,27 +76,29 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
 
   return (
     <div className="flex flex-col space-y-4">
-      <input
-        value={editorData.name}
-        onChange={e => setEditorData(prev => ({ ...prev, name: e.target.value }))}
-        placeholder="Template Name"
-        className="border p-2 w-full"
-      />
+      <div className="flex">
+        <input
+          value={editorData.name}
+          onChange={e => setEditorData(prev => ({ ...prev, name: e.target.value }))}
+          placeholder="Template Name"
+          className="border p-2 w-full"
+        />
 
-      <input
-        type="file"
-        accept="application/pdf"
-        onChange={e => setPdfFile(e.target.files?.[0] || null)}
-        className="border p-2 w-full bg-gray-100 text-black"
-      />
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={e => setPdfFile(e.target.files?.[0] || null)}
+          className="border p-2 w-full bg-gray-100 text-black"
+        />
 
-      <button
-        onClick={handleSave}
-        disabled={loading}
-        className="py-2 px-4 border bg-blue-500 text-white disabled:opacity-50"
-      >
-        {loading ? "Saving..." : templateId ? "Update Template" : "Create Template"}
-      </button>
+        <button
+          onClick={handleSave}
+          disabled={loading}
+          className="py-2 px-4 flex justify-center w-96 border cursor-pointer border-black bg-teal-900 text-white disabled:opacity-50"
+        >
+          {loading ? "Saving..." : templateId ? "Update Template" : "Create Template"}
+        </button>
+      </div>
 
       <div className="border w-full h-[700px] flex items-center justify-center bg-gray-50">
         {pdfFile || currentPdfUrl ? (

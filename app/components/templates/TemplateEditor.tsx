@@ -1,20 +1,4 @@
-type ElementType = 'textarea';
-interface DocumentElement<T extends ElementType = 'textarea'> {
-    id: string;
-    type: T;
-    placeholder?: string;
-}
-
-interface TemplateData<Elements extends DocumentElement[] = DocumentElement[]> {
-    name: string;
-    elements: Elements;
-    pdfBase?: string;
-}
-
-interface TemplateEditorProps<Data extends TemplateData = TemplateData> {
-    initialData?: Data;
-    onChange?: (data: Data) => void;
-}
+import { TemplateData, TemplateEditorProps, DocumentElement } from "./types";
 
 export const TemplateEditor = <Data extends TemplateData = TemplateData>({
     initialData,

@@ -6,7 +6,7 @@ export default function LogoutBtn() {
 
     return (
         <button
-            className="mr-auto px-4 py-1 bg-red-600 rounded hover:bg-red-700 text-white text-sm mt-auto"
+            className="mr-auto px-4 py-1 bg-teal-950 rounded hover:bg-teal-900 text-white text-sm mt-auto"
             onClick={() => {
                 localStorage.removeItem('authToken');
                 router.push('/');
