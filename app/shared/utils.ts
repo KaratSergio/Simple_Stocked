@@ -10,3 +10,8 @@ export function getErrorMessage(
     if ((error as FieldError).message) return (error as FieldError).message as string;
     return null;
 }
+
+// format date 2025-09-05T06:27:11.619Z to 2025-09-05
+export function extractDate(isoString: string): string {
+    return isoString.split("T")[0];
+}

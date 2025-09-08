@@ -1,15 +1,6 @@
 'use client';
 import { useState, useEffect } from "react";
-
-interface DocumentType {
-    id: string;
-    title: string;
-    pdf_generated: string;
-}
-
-interface DocumentProps {
-    documentId: string;
-}
+import { DocumentProps, DocumentType } from "./types";
 
 export const Document = ({ documentId }: DocumentProps) => {
     const [document, setDocument] = useState<DocumentType | null>(null);
@@ -35,7 +26,7 @@ export const Document = ({ documentId }: DocumentProps) => {
     );
 
     return (
-        <div className="">
+        <div>
             <h1 className="text-2xl font-bold mb-4">{document.title}</h1>
             <iframe
                 src={publicPdfUrl}

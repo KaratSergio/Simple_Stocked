@@ -9,12 +9,10 @@ export default function MainPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && isLoggedIn) {
-      router.push("/page/dashboard"); // редирект сразу
-    }
+    if (!loading && isLoggedIn) router.push("/page/dashboard");
   }, [loading, isLoggedIn, router]);
 
-  if (loading || isLoggedIn) return <div>Loading...</div>; // блокируем форму до проверки
+  if (loading || isLoggedIn) return <div>Loading...</div>;
 
   return <AuthForm />;
 }

@@ -3,24 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { TemplateSelect } from "../templates";
 import { DynamicForm } from "./DynamicForm";
-
-interface Template {
-  id: number;
-  name: string;
-  json_schema?: DocumentTemplate;
-}
-
-interface DocumentTemplate {
-  elements: DocumentElement[];
-  pageWidth: number;
-  pageHeight: number;
-}
-
-interface DocumentElement {
-  id: string;
-  type: "text" | "textarea" | "signature";
-  placeholder?: string;
-}
+import { Template } from "./types";
 
 export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -57,9 +40,6 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
     });
 
     const data = await res.json();
-    console.log('====================================');
-    console.log("data", data);
-    console.log('====================================');
     if (data.success) router.push(`/page/documents/${data.data.id}`);
     else alert("Failed to create document");
   };

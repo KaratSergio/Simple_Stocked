@@ -1,11 +1,9 @@
 'use client';
-
 import { FC, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-interface DocumentListProps {
-    ownerId: number;
-}
+import { DocumentListProps } from './types';
+import { extractDate } from '@/app/shared/utils';
+import { StatusBadge } from '../Badge';
 
 export const DocumentList: FC<DocumentListProps> = ({ ownerId }) => {
     const [loading, setLoading] = useState(false);
@@ -34,9 +32,11 @@ export const DocumentList: FC<DocumentListProps> = ({ ownerId }) => {
                 <li
                     key={d.id}
                     onClick={() => router.push(`/page/documents/${d.id}`)}
-                    className="cursor-pointer p-1 hover:bg-gray-200"
+                    className="flex gap-4 cursor-pointer p-1 hover:bg-gray-100"
                 >
-                    {d.name || d.id}
+                    <span className=''>{extractDate(d.created_at)}</span>
+                    <StatusBadge status={d.status} />
+                    <span>{d.title}</span>
                 </li>
             ))}
         </ul>
