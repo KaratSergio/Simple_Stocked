@@ -14,13 +14,20 @@ export const DynamicForm = ({ template, values, onChange }: DynamicFormProps) =>
           />
         )
       }
+
       if (el.type === 'signature') {
         return (
-          <div key={el.id} className="border h-24 w-full bg-gray-100 text-center flex items-center justify-center">
-            Sign Here
-          </div>
+          <input
+            key={el.id}
+            type="text"
+            placeholder={el.name || "Sign Here"}
+            value={values[el.id] || ""}
+            onChange={e => onChange(el.id, e.target.value)}
+            className="border-b border-dashed border-black w-full text-center py-2"
+          />
         )
       }
+
       return null
     })}
   </div>

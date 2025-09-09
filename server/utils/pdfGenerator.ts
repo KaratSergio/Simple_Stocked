@@ -3,7 +3,9 @@ import { r2 } from "@/server/config/r2.config";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import fontkit from "@pdf-lib/fontkit";
 
-// Breaks text into lines taking into account the page width
+// ============================
+// Utility: Wrap text to fit page width
+// ============================
 function wrapText(text: string, font: any, fontSize: number, maxWidth: number): string[] {
     if (typeof text !== "string") text = String(text);
     const words = text.split(" ");
@@ -23,7 +25,9 @@ function wrapText(text: string, font: any, fontSize: number, maxWidth: number): 
     return lines;
 }
 
-// Gets the font from S3
+// ============================
+// Utility: Fetch font from S3
+// ============================
 async function fetchFont(fontKey: string): Promise<Uint8Array> {
     const res = await r2.send(new GetObjectCommand({ Bucket: process.env.S3_BUCKET!, Key: fontKey }));
     const chunks: Uint8Array[] = [];
@@ -31,8 +35,15 @@ async function fetchFont(fontKey: string): Promise<Uint8Array> {
     return Buffer.concat(chunks);
 }
 
-// Generate PDF only from textarea with logs and page wrapping
-export async function generatePdf(schema: any, values: any, pdfBase?: string): Promise<Uint8Array> {
+// ============================
+// Main PDF Generator
+// ============================
+export async function generatePdf(
+    schema: any,       // DocumentTemplate JSON
+    values: Record<string, string>,  // Filled values
+    pdfBase?: string
+): Promise<Uint8Array> {
+
     const pdfDoc = await PDFDocument.create();
     pdfDoc.registerFontkit(fontkit);
 
@@ -49,34 +60,56 @@ export async function generatePdf(schema: any, values: any, pdfBase?: string): P
     let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
     let currentY = pageHeight - margin;
 
-    // Take text from values
-    const firstKey = Object.keys(values)[0];
-    let text = values[firstKey] || "";
+    // ============================
+    // Step 1: Render text fields
+    // ============================
+    for (const el of schema.elements) {
+        if (el.type !== 'textarea') continue;
 
-    // Break the text into paragraphs by line breaks
-    const paragraphs = text.split("\n");
+        const text = values[el.id] || "";
+        const paragraphs = text.split("\n");
 
-    let totalLines = 0;
-    paragraphs.forEach((para: any, pIndex: any) => {
-        const lines = wrapText(para, font, fontSize, maxWidth);
+        paragraphs.forEach((para: string) => {
+            const lines = wrapText(para, font, fontSize, maxWidth);
 
-        totalLines += lines.length;
+            lines.forEach((line) => {
+                if (currentY - (fontSize + lineSpacing) < margin) {
+                    // Add new page if running out of space
+                    currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+                    currentY = pageHeight - margin;
+                }
 
-        lines.forEach((line, lIndex) => {
-            if (currentY - (fontSize + lineSpacing) < margin) {
-                currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
-                currentY = pageHeight - margin;
-            }
+                currentPage.drawText(line, { x: margin, y: currentY, size: fontSize, font, color: rgb(0, 0, 0) });
+                currentY -= fontSize + lineSpacing;
+            });
 
-            currentPage.drawText(line,
-                { x: margin, y: currentY, size: fontSize, font, color: rgb(0, 0, 0) });
-
-            currentY -= fontSize + lineSpacing;
+            // Add extra spacing after paragraph
+            currentY -= lineSpacing * 2;
         });
+    }
 
-        // Indent after paragraph
-        currentY -= lineSpacing * 2;
-    });
+    // ============================
+    // Step 2: Render signature fields
+    // ============================
+    const signatures = schema.elements.filter((el: any) => el.type === 'signature');
+
+    if (signatures.length > 0) {
+        const sigHeight = 50; // height reserved for signatures
+        const sigSpacing = 20; // space between multiple signatures
+
+        // Loop through all pages
+        const pages = pdfDoc.getPages();
+        for (const page of pages) {
+            let sigX = margin;
+            const sigY = margin; // bottom of page
+
+            signatures.forEach((sig: any) => {
+                const sigText = values[sig.id] || "____________________";
+                page.drawText(sigText, { x: sigX, y: sigY, size: fontSize, font, color: rgb(0, 0, 0) });
+                sigX += 200; // move X for next signature
+            });
+        }
+    }
 
     return pdfDoc.save();
 }

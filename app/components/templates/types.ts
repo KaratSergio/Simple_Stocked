@@ -21,9 +21,9 @@ export interface TextareaElement extends DocumentElement {
 export interface SignatureElement extends DocumentElement {
     type: 'signature';
     role: string;     // 'client' or 'company'
-    name: string;
-    title?: string;   // optional job title
-    pageRepeat?: boolean; // should appear on every page
+    pageRepeat: boolean; // should appear on every page
+    position: 'bottom' | 'custom';
+    value: string;
 }
 
 // Union of all document elements
