@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export const RecipientList = ({ documentId }: { documentId: number }) => {
+export const RecipientList = ({ documentId }: { documentId: string }) => {
     const [recipients, setRecipients] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -18,7 +18,9 @@ export const RecipientList = ({ documentId }: { documentId: number }) => {
     return (
         <ul>
             {recipients.map((r) => (
-                <li key={r.id}>{r.email} - {r.status}</li>
+                <li key={r.id}>
+                    {r.email} - {r.status}
+                </li>
             ))}
         </ul>
     );

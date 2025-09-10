@@ -42,7 +42,7 @@ export async function listDocumentsByOwner(ownerId: number): Promise<Document[]>
 }
 
 export async function updateDocumentStatus(
-    documentId: number,
+    documentId: string,
     status: string,
     pdfGenerated?: string
 ): Promise<Document> {
@@ -53,7 +53,7 @@ export async function updateDocumentStatus(
 }
 
 export async function addRecipient(
-    documentId: number,
+    documentId: string,
     email: string
 ): Promise<Recipient> {
     if (!documentId) throw new Error("Document ID is required");
@@ -62,7 +62,7 @@ export async function addRecipient(
     return recipientRepo.addRecipient(documentId, email);
 }
 
-export async function listRecipients(documentId: number): Promise<Recipient[]> {
+export async function listRecipients(documentId: string): Promise<Recipient[]> {
     if (!documentId) throw new Error("Document ID is required");
     return recipientRepo.listRecipientsByDocument(documentId);
 }

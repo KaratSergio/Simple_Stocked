@@ -6,7 +6,7 @@ import { Signature } from "@/server/types/signature.types";
 const basePath = path.join(process.cwd(), "server/data/sql/queries/signatures");
 
 export async function addSignature(
-    documentId: number,
+    documentId: string,
     recipientId: number,
     signatureData: string
 ): Promise<Signature> {
@@ -15,7 +15,7 @@ export async function addSignature(
     return result.rows[0];
 }
 
-export async function listSignaturesByDocument(documentId: number): Promise<Signature[]> {
+export async function listSignaturesByDocument(documentId: string): Promise<Signature[]> {
     const sql = loadQuery(basePath, "listByDocument.sql");
     const result = await query(sql, [documentId]);
     return result.rows;

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export const SignatureList = ({ documentId }: { documentId: number }) => {
+export const SignatureList = ({ documentId }: { documentId: string }) => {
     const [sigs, setSigs] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
 

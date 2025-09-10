@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-export const SignatureAdd = ({ documentId, recipientId }: { documentId: number, recipientId: number }) => {
+export const SignatureAdd = ({ documentId, recipientId }: { documentId: string, recipientId: number }) => {
     const [signatureData, setSignatureData] = useState("");
     const [loading, setLoading] = useState(false);
 

@@ -20,7 +20,7 @@ export const DynamicForm = ({ template, values, onChange }: DynamicFormProps) =>
           <input
             key={el.id}
             type="text"
-            placeholder={el.name || "Sign Here"}
+            placeholder="Sign Here"
             value={values[el.id] || ""}
             onChange={e => onChange(el.id, e.target.value)}
             className="border-b border-dashed border-black w-full text-center py-2"

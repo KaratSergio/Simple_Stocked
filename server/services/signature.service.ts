@@ -1,8 +1,9 @@
 import * as signatureRepo from "@/server/data/repo/signature.repository";
+import * as documentRepo from "@/server/data/repo/document.repository"
 import { Signature } from "@/server/types/signature.types";
 
 export async function addSignature(
-    documentId: number,
+    documentId: string,
     recipientId: number,
     signatureData: string
 ): Promise<Signature> {
@@ -10,10 +11,14 @@ export async function addSignature(
     if (!recipientId) throw new Error("Recipient ID is required");
     if (!signatureData) throw new Error("Signature data is required");
 
-    return signatureRepo.addSignature(documentId, recipientId, signatureData);
+    const signature = await signatureRepo.addSignature(documentId, recipientId, signatureData);
+
+    await documentRepo.updateDocumentStatus(documentId, "signed");
+
+    return signature
 }
 
-export async function listSignatures(documentId: number): Promise<Signature[]> {
+export async function listSignatures(documentId: string): Promise<Signature[]> {
     if (!documentId) throw new Error("Document ID is required");
     return signatureRepo.listSignaturesByDocument(documentId);
 }

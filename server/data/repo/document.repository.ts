@@ -31,7 +31,7 @@ export async function listDocumentsByOwner(ownerId: number): Promise<Document[]>
 }
 
 export async function updateDocumentStatus(
-    id: number,
+    id: string,
     status: string,
     pdfGenerated?: string
 ): Promise<Document> {

@@ -6,7 +6,7 @@ import { Recipient } from "@/server/types/recipient.types";
 const basePath = path.join(process.cwd(), "server/data/sql/queries/recipients");
 
 export async function addRecipient(
-    documentId: number,
+    documentId: string,
     email: string,
     status: "pending" | "signed" | "declined" = "pending"
 ): Promise<Recipient> {
@@ -24,7 +24,7 @@ export async function updateRecipientStatus(
     return result.rows[0];
 }
 
-export async function listRecipientsByDocument(documentId: number): Promise<Recipient[]> {
+export async function listRecipientsByDocument(documentId: string): Promise<Recipient[]> {
     const sql = loadQuery(basePath, "listByDocument.sql");
     const result = await query(sql, [documentId]);
     return result.rows;
