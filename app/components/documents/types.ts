@@ -1,4 +1,5 @@
 import { DocumentTemplate } from "../templates/types";
+import { Recipient } from "../recipients/types";
 
 // ============================
 // Documents & Lists
@@ -21,14 +22,17 @@ export interface DocumentListProps {
 // Dynamic Form
 // ============================
 
-// Field value can be a string or null (not signed yet)
-export type FieldValue = string | null;
+// Field value can be a string or array of recipients
+export type FieldValue = string | Recipient[];
 
 // Values of the document by element ID
-export type DocumentValues = Record<string, FieldValue>;
+export interface DocumentValues {
+    [key: string]: FieldValue;
+}
 
+// Props for DynamicForm component
 export interface DynamicFormProps {
     template: DocumentTemplate;       // template to render
-    values: DocumentValues;           // current field values
+    values: DocumentValues;          // document fields
     onChange: (id: string, value: FieldValue) => void; // called when a field changes
 }

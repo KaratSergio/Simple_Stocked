@@ -3,15 +3,21 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { TemplateSelect } from "../templates";
 import { DynamicForm } from "./DynamicForm";
+
+import { DocumentValues, FieldValue } from "./types";
+import { DocumentTemplate } from "../templates/types";
 import { Template } from "../templates/types";
 
 export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [title, setTitle] = useState("");
-  const [values, setValues] = useState<Record<string, any>>({});
+  const [template, setTemplate] = useState<DocumentTemplate | null>(null);
+  const [values, setValues] = useState<DocumentValues>({});
+
   const router = useRouter();
 
+  // Loading templates
   useEffect(() => {
     fetch("/api/templates/list")
       .then(res => res.json())
@@ -20,19 +26,41 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
       });
   }, []);
 
-  const selectedTemplate = templates.find(t => t.id === selectedId) || null;
+  // Select template
+  const handleSelect = useCallback((id: number | null) => {
+    setSelectedId(id);
+    const tmpl = templates.find(t => t.id === id) || null;
+    setTemplate(tmpl?.json_schema || null);
 
-  const handleChange = (id: string, value: any) =>
+    // Initialize empty values for all elements
+    if (tmpl?.json_schema) {
+      const initialValues: DocumentValues = {};
+      tmpl.json_schema.elements.forEach(el => {
+        if (el.type === "textarea") initialValues[el.id] = "";
+        if (el.type === "signature") {
+          initialValues[el.id] = el.value?.length
+            ? el.value.map(r => ({ name: r.name || "", signature: r.signature || null }))
+            : [{ name: "", signature: null }];
+        }
+      });
+      setValues(initialValues);
+    } else {
+      setValues({});
+    }
+  }, [templates]);
+
+  const handleChange = (id: string, value: FieldValue) => {
     setValues(prev => ({ ...prev, [id]: value }));
+  };
 
   const handleSubmit = async () => {
-    if (!selectedTemplate) return alert("Select a template");
+    if (!selectedId || !template) return alert("Select a template");
 
     const res = await fetch("/api/documents/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        templateId: selectedTemplate.id,
+        templateId: selectedId,
         ownerId,
         title,
         values,
@@ -44,11 +72,6 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
     else alert("Failed to create document");
   };
 
-  const handleSelect = useCallback((id: number | null) => {
-    setSelectedId(id);
-    setValues({});
-  }, []);
-
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Create Document</h1>
@@ -57,7 +80,7 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
         type="text"
         placeholder="Document title"
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={e => setTitle(e.target.value)}
         className="input"
       />
 
@@ -67,9 +90,9 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
         onSelect={handleSelect}
       />
 
-      {selectedTemplate?.json_schema && (
+      {template && (
         <DynamicForm
-          template={selectedTemplate.json_schema}
+          template={template}
           values={values}
           onChange={handleChange}
         />

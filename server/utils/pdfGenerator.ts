@@ -3,11 +3,15 @@ import { r2 } from "@/server/config/r2.config";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import fontkit from "@pdf-lib/fontkit";
 
+export interface Recipient {
+    name: string;
+    signature?: string | null;   // base64 canvas signatures
+}
+
 // ============================
-// Utility: Wrap text to fit page width
+// Utility: Wrap text
 // ============================
 function wrapText(text: string, font: any, fontSize: number, maxWidth: number): string[] {
-    if (typeof text !== "string") text = String(text);
     const words = text.split(" ");
     const lines: string[] = [];
     let line = "";
@@ -26,7 +30,7 @@ function wrapText(text: string, font: any, fontSize: number, maxWidth: number): 
 }
 
 // ============================
-// Utility: Fetch font from S3
+// Fetch font
 // ============================
 async function fetchFont(fontKey: string): Promise<Uint8Array> {
     const res = await r2.send(new GetObjectCommand({ Bucket: process.env.S3_BUCKET!, Key: fontKey }));
@@ -36,22 +40,21 @@ async function fetchFont(fontKey: string): Promise<Uint8Array> {
 }
 
 // ============================
-// Main PDF Generator
+// Generate PDF
 // ============================
 export async function generatePdf(
-    schema: any,       // DocumentTemplate JSON
-    values: Record<string, string>,  // Filled values
+    schema: any,
+    values: { textarea_1: string; recipients: Recipient[] },
     pdfBase?: string
 ): Promise<Uint8Array> {
-
     const pdfDoc = await PDFDocument.create();
     pdfDoc.registerFontkit(fontkit);
 
     const fontBytes = await fetchFont("DejaVuSans.ttf");
     const font = await pdfDoc.embedFont(fontBytes);
 
-    const pageWidth = 595.28;
-    const pageHeight = 841.89;
+    const pageWidth = schema.pageWidth || 595;
+    const pageHeight = schema.pageHeight || 842;
     const margin = 50;
     const fontSize = 12;
     const lineSpacing = 4;
@@ -60,54 +63,40 @@ export async function generatePdf(
     let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
     let currentY = pageHeight - margin;
 
-    // ============================
-    // Step 1: Render text fields
-    // ============================
-    for (const el of schema.elements) {
-        if (el.type !== 'textarea') continue;
+    // Render textarea
+    const text = values.textarea_1 || "";
+    const paragraphs = text.split("\n");
 
-        const text = values[el.id] || "";
-        const paragraphs = text.split("\n");
-
-        paragraphs.forEach((para: string) => {
-            const lines = wrapText(para, font, fontSize, maxWidth);
-
-            lines.forEach((line) => {
-                if (currentY - (fontSize + lineSpacing) < margin) {
-                    // Add new page if running out of space
-                    currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
-                    currentY = pageHeight - margin;
-                }
-
-                currentPage.drawText(line, { x: margin, y: currentY, size: fontSize, font, color: rgb(0, 0, 0) });
-                currentY -= fontSize + lineSpacing;
-            });
-
-            // Add extra spacing after paragraph
-            currentY -= lineSpacing * 2;
-        });
+    for (const para of paragraphs) {
+        const lines = wrapText(para, font, fontSize, maxWidth);
+        for (const line of lines) {
+            if (currentY - fontSize < margin) {
+                currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+                currentY = pageHeight - margin;
+            }
+            currentPage.drawText(line, { x: margin, y: currentY, size: fontSize, font, color: rgb(0, 0, 0) });
+            currentY -= fontSize + lineSpacing;
+        }
+        currentY -= lineSpacing * 2;
     }
 
-    // ============================
-    // Step 2: Render signature fields
-    // ============================
-    const signatures = schema.elements.filter((el: any) => el.type === 'signature');
-
-    if (signatures.length > 0) {
-        const sigHeight = 50; // height reserved for signatures
-        const sigSpacing = 20; // space between multiple signatures
-
-        // Loop through all pages
+    // Render recipients with signature
+    const recipients = values.recipients || [];
+    if (recipients.length > 0) {
         const pages = pdfDoc.getPages();
         for (const page of pages) {
             let sigX = margin;
-            const sigY = margin; // bottom of page
+            const sigY = margin;
 
-            signatures.forEach((sig: any) => {
-                const sigText = values[sig.id] || "____________________";
-                page.drawText(sigText, { x: sigX, y: sigY, size: fontSize, font, color: rgb(0, 0, 0) });
-                sigX += 200; // move X for next signature
-            });
+            for (const r of recipients) {
+                if (r.signature) {
+                    const png = await pdfDoc.embedPng(r.signature);
+                    page.drawImage(png, { x: sigX, y: sigY, width: 150, height: 50 });
+                } else {
+                    page.drawText(`${r.name} ____________`, { x: sigX, y: sigY, size: fontSize, font, color: rgb(0, 0, 0) });
+                }
+                sigX += 200;
+            }
         }
     }
 

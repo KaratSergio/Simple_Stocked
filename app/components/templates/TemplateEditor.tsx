@@ -1,50 +1,56 @@
-import { TemplateData, TemplateEditorProps, DocumentElement, SignatureElement } from "./types";
+import { TemplateData, TemplateEditorProps, TextareaElement, SignatureElement } from "./types";
+import { Recipient } from "../recipients/types";
 
 export const TemplateEditor = <Data extends TemplateData = TemplateData>({
     initialData,
     onChange,
 }: TemplateEditorProps<Data>): Data => {
 
-    // Default textarea element for the template
-    const defaultTextarea: DocumentElement = { id: 'textarea_1', type: 'textarea' };
+    // Default textarea element
+    const defaultTextarea: TextareaElement = { id: 'textarea_1', type: 'textarea', value: '' };
+    // Default 2 recipients
+    const defaultRecipients: Recipient[] = [
+        { name: 'Recipient 1', signature: null },
+        { name: 'Recipient 2', signature: null },
+    ];
 
-    // If initialData already has elements → return them as is
+    // If initial data exists, return as is
     if (initialData?.elements?.length) {
+        const elements = initialData.elements.map(el => {
+            if (el.type === 'signature') {
+                return {
+                    ...el,
+                    value: (el.value && el.value.length) ? el.value : defaultRecipients
+                };
+            }
+            return el;
+        });
+
         const templateData = {
-            name: initialData?.name ?? '',
-            elements: initialData.elements,
-            pdfBase: initialData?.pdfBase,
+            name: initialData.name ?? '',
+            elements,
+            pdfBase: initialData.pdfBase,
         } as Data;
 
-        // Trigger onChange callback with existing data
         onChange?.(templateData);
         return templateData;
     }
 
-    // For now, fixed number of signatures (2) → can be moved to form input later
-    const signerCount = 2;
+    // Use a single "signature" element as placeholder for recipients
+    const signatureElement: SignatureElement = {
+        id: 'recipients_1',
+        type: 'signature',
+        pageRepeat: true,
+        position: 'bottom',
+        value: defaultRecipients,
+    };
 
-    // Generate default empty signature fields
-    const defaultSignatures: SignatureElement[] = Array.from({ length: signerCount }).map(
-        (_, i) => ({
-            id: `signature_${i + 1}`,
-            type: 'signature',
-            role: `signer_${i + 1}`,
-            pageRepeat: true,     // should appear on every page
-            position: 'bottom',   // default position at the bottom
-            value: "",            // default empty value (placeholder)
-        })
-    );
-
-    // Combine textarea and signature elements into the template
     const templateData = {
         name: initialData?.name ?? '',
-        elements: [defaultTextarea, ...defaultSignatures],
+        elements: [defaultTextarea, signatureElement],
         pdfBase: initialData?.pdfBase,
     } as Data;
 
-    // Trigger onChange callback with new template data
     onChange?.(templateData);
     return templateData;
 };
-

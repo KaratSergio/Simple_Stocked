@@ -9,7 +9,7 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
   const [currentPdfUrl, setCurrentPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // loading template if editing
+  // Load template from server
   useEffect(() => {
     if (!templateId) return;
     setLoading(true);
@@ -31,17 +31,16 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
       .finally(() => setLoading(false));
   }, [templateId]);
 
-  // Generate "one text element" via TemplateEditor
+  // Initialize template (textarea + recipients)
   useEffect(() => {
     TemplateEditor({ initialData: editorData, onChange: setEditorData });
   }, [editorData.name]);
 
   const handleSave = async () => {
-    if (!editorData.name) return; // name is required
+    if (!editorData.name) return;
     setLoading(true);
 
     try {
-      // load new PDF if selected
       const pdfUrl = pdfFile
         ? await (async () => {
           const formData = new FormData();
@@ -53,14 +52,13 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
         })()
         : currentPdfUrl;
 
-      // save the template
       const res = await fetch(templateId ? `/api/templates/${templateId}` : "/api/templates/create", {
         method: templateId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: editorData.name,
           pdfBase: pdfUrl,
-          jsonSchema: { elements: editorData.elements, pageWidth: 600, pageHeight: 800 }
+          jsonSchema: { ...editorData, pageWidth: 600, pageHeight: 800 }
         }),
       });
 
@@ -76,7 +74,7 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
 
   return (
     <div className="flex flex-col space-y-4">
-      <div className="flex">
+      <div className="flex space-x-2">
         <input
           value={editorData.name}
           onChange={e => setEditorData(prev => ({ ...prev, name: e.target.value }))}

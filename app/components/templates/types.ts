@@ -1,3 +1,5 @@
+import { Recipient } from "../recipients/types";
+
 // ============================
 // Element Types
 // ============================
@@ -14,16 +16,15 @@ export interface DocumentElement {
 // Textarea element
 export interface TextareaElement extends DocumentElement {
     type: 'textarea';
-    placeholder?: string;
+    value: string;
 }
 
 // Signature element
 export interface SignatureElement extends DocumentElement {
     type: 'signature';
-    role: string;     // 'client' or 'company'
     pageRepeat: boolean; // should appear on every page
     position: 'bottom' | 'custom';
-    value: string;
+    value: Recipient[];
 }
 
 // Union of all document elements
@@ -33,9 +34,10 @@ export type AnyDocumentElement = TextareaElement | SignatureElement;
 // Document Template
 // ============================
 export interface DocumentTemplate {
-    elements: AnyDocumentElement[];
+    name: string;
     pageWidth: number;
     pageHeight: number;
+    elements: AnyDocumentElement[];
 }
 
 // ============================
