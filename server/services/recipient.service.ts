@@ -5,10 +5,7 @@ import { Recipient } from "@/server/types/recipient.types";
 export async function addRecipient(documentId: string, email: string): Promise<Recipient> {
     const recipient = await recipientRepo.addRecipient(documentId, email);
 
-    // Send invite email (async)
-    sendInvite(email, documentId, recipient.id.toString()).catch(err =>
-        console.error("Failed to send invite:", err)
-    );
+    await sendInvite(email, documentId, recipient.id.toString());
 
     return recipient;
 }

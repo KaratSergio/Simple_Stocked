@@ -1,10 +1,12 @@
-import * as documentService from "@/server/services/document.service";
+import * as recipientService from "@/server/services/recipient.service";
 import { Recipient } from "@/server/types/recipient.types";
 
 export async function addRecipient(documentId: string, email: string): Promise<Recipient> {
-    return documentService.addRecipient(documentId, email);
+    const recipient = await recipientService.addRecipient(documentId, email);
+
+    return recipient;
 }
 
 export async function listRecipients(documentId: string): Promise<Recipient[]> {
-    return documentService.listRecipients(documentId);
+    return recipientService.listRecipients(documentId);
 }

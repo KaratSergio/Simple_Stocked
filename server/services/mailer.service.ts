@@ -1,5 +1,10 @@
 export async function sendInvite(email: string, documentId: string, signatureId: string) {
-    const link = `http://localhost:3000/private/sign/${signatureId}?doc=${documentId}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const link = `${baseUrl}/page/sign/${signatureId}?doc=${documentId}`;
+
+    console.log('====================================');
+    console.log(link);
+    console.log('====================================');
 
     const body = {
         sender: { name: 'Document Signing Platform (DSP-service)', email: 'safonov.json@gmail.com' },
@@ -22,10 +27,10 @@ export async function sendInvite(email: string, documentId: string, signatureId:
             body: JSON.stringify(body)
         });
 
-        if (!res.ok) {
-            const text = await res.text();
-            throw new Error(`Sendinblue API error: ${res.status} ${text}`);
-        }
+        const responseText = await res.text();
+        // console.log("[Mailer] Raw response:", responseText);
+
+        if (!res.ok) throw new Error(`Sendinblue API error: ${res.status} ${responseText}`);
 
         console.log(`[Mailer] Invite sent to ${email}`);
     } catch (err) {

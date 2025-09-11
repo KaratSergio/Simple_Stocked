@@ -3,13 +3,13 @@ import { getRecipientById } from "@/server/services/recipient.service";
 import { SignatureAdd } from "@/components/signatures";
 
 interface Props {
-    params: { signatureId: string };
+    params: { id: string };
     searchParams: { doc: string };
 }
 
 export default async function SignPage({ params, searchParams }: Props) {
     const documentId = Number(searchParams.doc);
-    const signatureId = Number(params.signatureId);
+    const signatureId = Number(params.id);
 
     const doc = await getDocumentById(documentId);
     const recipient = await getRecipientById(signatureId);

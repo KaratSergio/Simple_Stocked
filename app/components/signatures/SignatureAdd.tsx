@@ -1,25 +1,73 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 interface Props {
-    documentId: number;
-    recipientId: number;
+    documentId: string;
+    recipientId: string;
 }
 
-export default function SignatureAdd({ documentId, recipientId }: Props) {
+export function SignatureAdd({ documentId, recipientId }: Props) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [loading, setLoading] = useState(false);
+    const [drawing, setDrawing] = useState(false);
+
+    // Настройка контекста для рисования
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "#000";
+    }, []);
+
+    // Начало рисования
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setDrawing(true);
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const rect = canvas.getBoundingClientRect();
+        ctx.beginPath();
+        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    };
+
+    // Рисование
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!drawing) return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const rect = canvas.getBoundingClientRect();
+        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctx.stroke();
+    };
+
+    // Конец рисования
+    const handleMouseUp = () => setDrawing(false);
+    const handleMouseLeave = () => setDrawing(false);
 
     const handleClear = () => {
         const canvas = canvasRef.current;
-        if (canvas) canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
     };
 
     const handleSign = async () => {
         const canvas = canvasRef.current;
         if (!canvas) return alert("Canvas not found");
 
-        const signatureData = canvas.toDataURL(); // base64
+        const signatureData = canvas.toDataURL();
         if (!signatureData) return alert("Draw your signature first");
 
         setLoading(true);
@@ -44,10 +92,25 @@ export default function SignatureAdd({ documentId, recipientId }: Props) {
 
     return (
         <div className="flex flex-col gap-2">
-            <canvas ref={canvasRef} width={400} height={200} className="border" />
+            <canvas
+                ref={canvasRef}
+                width={400}
+                height={200}
+                className="border border-black"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+            />
             <div className="flex gap-2">
-                <button onClick={handleClear} className="btn">Clear</button>
-                <button onClick={handleSign} disabled={loading} className="btn bg-blue-500 text-white">
+                <button onClick={handleClear} className="btn">
+                    Clear
+                </button>
+                <button
+                    onClick={handleSign}
+                    disabled={loading}
+                    className="btn bg-blue-500 text-white"
+                >
                     {loading ? "Signing..." : "Sign Document"}
                 </button>
             </div>
