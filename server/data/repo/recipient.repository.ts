@@ -29,3 +29,9 @@ export async function listRecipientsByDocument(documentId: string): Promise<Reci
     const result = await query(sql, [documentId]);
     return result.rows;
 }
+
+export async function getRecipientById(recipientId: number): Promise<Recipient | null> {
+    const sql = loadQuery(basePath, "getById.sql");
+    const result = await query(sql, [recipientId]);
+    return result.rows[0] || null;
+}

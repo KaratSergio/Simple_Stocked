@@ -23,3 +23,8 @@ export async function updateStatus(
 ): Promise<Recipient> {
     return recipientRepo.updateRecipientStatus(recipientId, status);
 }
+
+export async function getRecipientById(recipientId: number): Promise<Recipient | null> {
+    const recipient = await recipientRepo.getRecipientById(recipientId);
+    return recipient || null;
+}

@@ -15,6 +15,9 @@ export async function addSignature(
 
     await documentRepo.updateDocumentStatus(documentId, "signed");
 
+    // TODO: Regenerate PDF with signature(s)
+    // await generatePdf(documentId);
+
     return signature
 }
 
