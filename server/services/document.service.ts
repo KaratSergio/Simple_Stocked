@@ -2,7 +2,6 @@ import * as docRepo from "@/server/data/repo/document.repository";
 import * as recipientRepo from "@/server/data/repo/recipient.repository";
 import * as templateRepo from "@/server/data/repo/template.repository";
 import { Document } from "@/server/types/document.types";
-import { Recipient } from "@/server/types/recipient.types";
 import { generatePdf } from "@/server/utils/pdfGenerator";
 import { uploadPdf } from "@/server/utils/s3Storage";
 
@@ -28,6 +27,12 @@ export async function createDocument(
 
     const doc = await docRepo.createDocument(templateId, ownerId, title, values, pdfUrl, "draft");
 
+    if (Array.isArray(values.recipients)) {
+        for (const recipient of values.recipients) {
+            await recipientRepo.addRecipient(doc.id, recipient.name, "");
+        }
+    }
+
     return doc;
 }
 
@@ -50,19 +55,4 @@ export async function updateDocumentStatus(
     if (!status) throw new Error("Status is required");
 
     return docRepo.updateDocumentStatus(documentId, status, pdfGenerated);
-}
-
-export async function addRecipient(
-    documentId: string,
-    email: string
-): Promise<Recipient> {
-    if (!documentId) throw new Error("Document ID is required");
-    if (!email) throw new Error("Email is required");
-
-    return recipientRepo.addRecipient(documentId, email);
-}
-
-export async function listRecipients(documentId: string): Promise<Recipient[]> {
-    if (!documentId) throw new Error("Document ID is required");
-    return recipientRepo.listRecipientsByDocument(documentId);
 }

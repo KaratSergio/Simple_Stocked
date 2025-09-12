@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
         if (!documentIdParam) throw new Error("documentId query required");
 
-        const recipients = await recipientController.listRecipients(Number(documentIdParam));
+        const recipients = await recipientController.listRecipients(String(documentIdParam));
 
         return NextResponse.json({ success: true, data: recipients });
     } catch (err: any) {

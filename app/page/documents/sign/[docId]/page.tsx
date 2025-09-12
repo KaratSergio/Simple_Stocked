@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import SignatureCanvas from "@/components/SignatureCanvas";
+import { SignatureAdd } from "@/components/signatures";
 
 export default function SignPage({ params }: { params: { docId: string } }) {
     const [signature, setSignature] = useState<string | null>(null);
@@ -32,7 +32,7 @@ export default function SignPage({ params }: { params: { docId: string } }) {
             <h1 className="text-xl font-bold mb-4">Sign Document {params.docId}</h1>
 
             {/* Canvas for signature */}
-            <SignatureCanvas onChange={setSignature} />
+            <SignatureAdd onChange={setSignature} />
 
             <button
                 onClick={handleSubmit}

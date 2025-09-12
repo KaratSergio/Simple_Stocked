@@ -7,11 +7,12 @@ const basePath = path.join(process.cwd(), "server/data/sql/queries/recipients");
 
 export async function addRecipient(
     documentId: string,
+    name: string,
     email: string,
     status: "pending" | "signed" | "declined" = "pending"
 ): Promise<Recipient> {
     const sql = loadQuery(basePath, "add.sql");
-    const result = await query(sql, [documentId, email, status]);
+    const result = await query(sql, [documentId, name, email, status]);
     return result.rows[0];
 }
 

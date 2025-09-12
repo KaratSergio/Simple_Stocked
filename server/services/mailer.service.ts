@@ -1,10 +1,6 @@
-export async function sendInvite(email: string, documentId: string, signatureId: string) {
+export async function sendInvite(email: string, documentId: string, recipientId: string) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-    const link = `${baseUrl}/page/sign/${signatureId}?doc=${documentId}`;
-
-    console.log('====================================');
-    console.log(link);
-    console.log('====================================');
+    const link = `${baseUrl}/page/sign/${recipientId}?doc=${documentId}`;
 
     const body = {
         sender: { name: 'Document Signing Platform (DSP-service)', email: 'safonov.json@gmail.com' },
