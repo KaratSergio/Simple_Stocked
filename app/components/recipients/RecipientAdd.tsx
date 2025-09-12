@@ -1,71 +1,92 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Recipient } from "./types";
 
 export const RecipientAdd = ({ documentId }: { documentId: string }) => {
-    const [emails, setEmails] = useState("");
+    const [recipients, setRecipients] = useState<Recipient[]>([]);
     const [loading, setLoading] = useState(false);
-    const [added, setAdded] = useState<string[]>([]);
 
-    const handleSend = async () => {
-        if (!emails.trim()) return alert("Enter at least one email");
+    // Fetch all recipients of this document
+    useEffect(() => {
+        fetch(`/api/recipients/list?documentId=${documentId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success) setRecipients(data.data);
+            });
+    }, [documentId]);
 
-        // Split the string by space, comma or semicolon
-        const emailList = emails
-            .split(/[\s,;]+/)
-            .map(e => e.trim())
-            .filter(e => e);
+    // Handle input change for a recipient email
+    const handleChangeEmail = (id: string, email: string) => {
+        setRecipients((prev) =>
+            prev.map((r) => (r.id === id ? { ...r, email } : r))
+        );
+    };
 
-        setLoading(true);
+    // Send invite to a single recipient
+    const sendInviteToRecipient = async (recipient: Recipient) => {
+        if (!recipient.email.trim()) return alert(`Please enter email for ${recipient.name}`);
 
         try {
-            const addedRecipients: string[] = [];
+            // Update recipient email in database
+            await fetch(`/api/recipients/update-email`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ recipientId: recipient.id, email: recipient.email }),
+            });
 
-            for (const email of emailList) {
-                const res = await fetch("/api/recipients/add", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ documentId, email }),
-                });
-                const data = await res.json();
-                if (data.success) addedRecipients.push(data.data.email);
-            }
+            // Send invite email
+            await fetch(`/api/recipients/invite`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ documentId, recipientId: recipient.id }),
+            });
 
-            setAdded(addedRecipients);
-            alert("Recipients added: " + addedRecipients.join(", "));
-            setEmails("");
+            alert(`Invite sent to ${recipient.email}`);
         } catch (err) {
             console.error(err);
-            alert("Failed to add recipients");
-        } finally {
-            setLoading(false);
+            alert(`Failed to send invite to ${recipient.name}`);
         }
     };
 
-    return (
-        <div className="flex flex-col gap-2">
-            <textarea
-                value={emails}
-                onChange={e => setEmails(e.target.value)}
-                placeholder="Enter emails separated by space, comma or semicolon"
-                className="border p-2 h-24"
-            />
-            <button
-                onClick={handleSend}
-                disabled={loading}
-                className="btn bg-blue-500 text-white py-2 px-4 rounded"
-            >
-                {loading ? "Adding..." : "Send for signature"}
-            </button>
+    // Send invites to all recipients
+    const sendInviteToAll = async () => {
+        setLoading(true);
+        for (const r of recipients) {
+            await sendInviteToRecipient(r);
+        }
+        setLoading(false);
+    };
 
-            {added.length > 0 && (
-                <div className="mt-2">
-                    <h3 className="font-semibold">Added recipients:</h3>
-                    <ul className="list-disc pl-5">
-                        {added.map(email => (
-                            <li key={email}>{email}</li>
-                        ))}
-                    </ul>
+    return (
+        <div className="flex flex-col gap-4">
+
+            {recipients.map((r) => (
+                <div key={r.id} className="flex items-center gap-2">
+                    <span className="w-32">{r.name}</span>
+                    <input
+                        type="email"
+                        value={r.email}
+                        placeholder="Enter email"
+                        onChange={(e) => handleChangeEmail(r.id, e.target.value)}
+                        className="border p-2 flex-1"
+                    />
+                    <button
+                        onClick={() => sendInviteToRecipient(r)}
+                        className="btn bg-green-500 text-white py-1 px-3 rounded"
+                    >
+                        Send Invite
+                    </button>
                 </div>
+            ))}
+
+            {recipients.length > 1 && (
+                <button
+                    onClick={sendInviteToAll}
+                    disabled={loading}
+                    className="btn bg-blue-500 text-white py-2 px-4 rounded mt-2"
+                >
+                    {loading ? "Sending..." : "Send Invites to All"}
+                </button>
             )}
         </div>
     );
