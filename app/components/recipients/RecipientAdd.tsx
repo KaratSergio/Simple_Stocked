@@ -28,7 +28,7 @@ export const RecipientAdd = ({ documentId }: { documentId: string }) => {
 
         try {
             // Update recipient email in database
-            await fetch(`/api/recipients/update-email`, {
+            await fetch(`/api/recipients/update`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ recipientId: recipient.id, email: recipient.email }),

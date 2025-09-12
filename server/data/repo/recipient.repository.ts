@@ -36,3 +36,13 @@ export async function getRecipientById(recipientId: number): Promise<Recipient |
     const result = await query(sql, [recipientId]);
     return result.rows[0] || null;
 }
+
+// Update recipient email (or other fields in the future)
+export async function updateRecipient(
+    recipientId: number,
+    email: string
+): Promise<Recipient> {
+    const sql = loadQuery(basePath, "update.sql");
+    const result = await query(sql, [email, recipientId]);
+    return result.rows[0];
+}
