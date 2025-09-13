@@ -1,4 +1,4 @@
-import * as docRepo from "@/server/data/repo/document.repository";
+import * as documentRepo from "@/server/data/repo/document.repository";
 import * as recipientRepo from "@/server/data/repo/recipient.repository";
 import * as templateRepo from "@/server/data/repo/template.repository";
 import { Document } from "@/server/types/document.types";
@@ -25,7 +25,7 @@ export async function createDocument(
     const key = `documents/${ownerId}/${Date.now()}.pdf`;
     const pdfUrl = await uploadPdf(pdfBytes, key);
 
-    const doc = await docRepo.createDocument(templateId, ownerId, title, values, pdfUrl, "draft");
+    const doc = await documentRepo.createDocument(templateId, ownerId, title, values, pdfUrl, "draft");
 
     if (Array.isArray(values.recipients)) {
         for (const recipient of values.recipients) {
@@ -36,14 +36,14 @@ export async function createDocument(
     return doc;
 }
 
-export async function getDocumentById(id: number): Promise<Document | null> {
+export async function getDocumentById(id: string): Promise<Document | null> {
     if (!id) throw new Error("Document ID is required");
-    return docRepo.getDocumentById(id);
+    return documentRepo.getDocumentById(id);
 }
 
 export async function listDocumentsByOwner(ownerId: number): Promise<Document[]> {
     if (!ownerId) throw new Error("Owner ID is required");
-    return docRepo.listDocumentsByOwner(ownerId);
+    return documentRepo.listDocumentsByOwner(ownerId);
 }
 
 export async function updateDocumentStatus(
@@ -54,5 +54,5 @@ export async function updateDocumentStatus(
     if (!documentId) throw new Error("Document ID is required");
     if (!status) throw new Error("Status is required");
 
-    return docRepo.updateDocumentStatus(documentId, status, pdfGenerated);
+    return documentRepo.updateDocumentStatus(documentId, status, pdfGenerated);
 }
