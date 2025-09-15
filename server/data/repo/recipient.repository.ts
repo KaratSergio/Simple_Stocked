@@ -31,6 +31,12 @@ export async function listRecipientsByDocument(documentId: string): Promise<Reci
     return result.rows;
 }
 
+export async function listRecipientsByOwner(ownerId: number): Promise<Recipient[]> {
+    const sql = loadQuery(basePath, "listByOwner.sql");
+    const result = await query(sql, [ownerId]);
+    return result.rows;
+}
+
 export async function getRecipientById(recipientId: number): Promise<Recipient | null> {
     const sql = loadQuery(basePath, "getById.sql");
     const result = await query(sql, [recipientId]);

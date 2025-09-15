@@ -1,4 +1,4 @@
-CREATE TABLE auth_logs (
+CREATE TABLE IF NOT EXISTS auth_logs (
    id SERIAL PRIMARY KEY,
    user_id INT NULL,
    event_type VARCHAR(50) NOT NULL,  -- login, logout, refresh, register, failed_login и т.п.

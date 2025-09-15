@@ -38,7 +38,7 @@ export const TemplateEditor = <Data extends TemplateData = TemplateData>({
 
     // Use a single "signature" element as placeholder for recipients
     const signatureElement: SignatureElement = {
-        id: 'recipients_1',
+        id: 'recipients',
         type: 'signature',
         pageRepeat: true,
         position: 'bottom',

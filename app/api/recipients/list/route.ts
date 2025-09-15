@@ -4,11 +4,21 @@ import * as recipientController from "@/server/controllers/recipient.controller"
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
-        const documentIdParam = searchParams.get("documentId");
+        const documentId = searchParams.get("documentId");
+        // const ownerId = searchParams.get("ownerId");
+        const ownerId = 5
 
-        if (!documentIdParam) throw new Error("documentId query required");
+        let recipients;
 
-        const recipients = await recipientController.listRecipients(String(documentIdParam));
+        if (documentId) {
+            // Получаем ресипиентов документа
+            recipients = await recipientController.listRecipientsByDocument(documentId);
+        } else if (ownerId) {
+            // Получаем всех ресипиентов владельца
+            recipients = await recipientController.listRecipientsByOwner(Number(ownerId));
+        } else {
+            throw new Error("Either documentId or ownerId query required");
+        }
 
         return NextResponse.json({ success: true, data: recipients });
     } catch (err: any) {
