@@ -84,18 +84,26 @@ export async function generatePdf(
     const recipients = values.recipients || [];
     if (recipients.length > 0) {
         const pages = pdfDoc.getPages();
+
         for (const page of pages) {
-            let sigX = margin;
-            const sigY = margin;
+            let sigY = margin; // vertical offset
 
             for (const r of recipients) {
+                // Draw the recipient's name on the left
+                const nameX = margin;
+                page.drawText(r.name, { x: nameX, y: sigY, size: fontSize, font, color: rgb(0, 0, 0) });
+
+                // Draw a signature to the right of the name
+                const sigX = nameX + 100; // 100px from the name, can be adjusted
                 if (r.signature) {
                     const png = await pdfDoc.embedPng(r.signature);
-                    page.drawImage(png, { x: sigX, y: sigY, width: 150, height: 50 });
+                    page.drawImage(png, { x: sigX, y: sigY - 10, width: 150, height: 50 });
+                    // y -10 so that the caption doesn't "hang" too high
                 } else {
-                    page.drawText(`${r.name} ____________`, { x: sigX, y: sigY, size: fontSize, font, color: rgb(0, 0, 0) });
+                    page.drawText("__________", { x: sigX, y: sigY, size: fontSize, font, color: rgb(0, 0, 0) });
                 }
-                sigX += 200;
+
+                sigY += 60;
             }
         }
     }

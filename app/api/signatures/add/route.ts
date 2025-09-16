@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
         const signature = await signatureController.addSignature(documentId, recipientId, signatureData);
 
-        return NextResponse.json(signature);
+        return NextResponse.json({ success: true, data: signature });
     } catch (err: any) {
         console.error("Error saving signature:", err);
         return NextResponse.json({ error: err.message }, { status: 400 });

@@ -40,3 +40,9 @@ export async function updateDocumentStatus(
     const result = await query(sql, [id, status, pdfGenerated ?? null, values ?? null]);
     return result.rows[0];
 }
+
+export async function updateValues(id: string, values: any): Promise<Document> {
+    const sql = loadQuery(basePath, "updateValues.sql");
+    const result = await query(sql, [id, values]);
+    return result.rows[0];
+}

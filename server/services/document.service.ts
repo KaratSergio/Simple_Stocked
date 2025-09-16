@@ -27,10 +27,30 @@ export async function createDocument(
 
     const doc = await documentRepo.createDocument(templateId, ownerId, title, values, pdfUrl, "draft");
 
+    // Recipients
     if (Array.isArray(values.recipients)) {
+        const recipientsWithIds = [];
+
         for (const recipient of values.recipients) {
-            await recipientRepo.addRecipient(doc.id, recipient.name, "");
+            const savedRecipient = await recipientRepo.addRecipient(doc.id, recipient.name, recipient.email ?? "");
+            recipientsWithIds.push({
+                id: savedRecipient.id, // id from DB recipient table
+                name: recipient.name,
+                email: recipient.email ?? "",
+                signature: recipient.signature ?? null,
+            });
         }
+
+        // update document values
+        await documentRepo.updateValues(doc.id, {
+            ...values,
+            recipients: recipientsWithIds,
+        });
+
+        doc.values = {
+            ...values,
+            recipients: recipientsWithIds,
+        };
     }
 
     return doc;

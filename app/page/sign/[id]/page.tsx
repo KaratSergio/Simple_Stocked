@@ -8,11 +8,11 @@ interface Props {
 }
 
 export default async function SignPage({ params, searchParams }: Props) {
-    const documentId = Number(searchParams.doc);
-    const signatureId = Number(params.id);
+    const documentId = searchParams.doc;
+    const recipientId = params.id;
 
     const doc = await getDocumentById(documentId);
-    const recipient = await getRecipientById(signatureId);
+    const recipient = await getRecipientById(recipientId);
 
     if (!doc || !recipient) {
         return <p>Document or recipient not found</p>;
@@ -36,7 +36,7 @@ export default async function SignPage({ params, searchParams }: Props) {
             {/* Right: Canvas for signature */}
             <div className="w-96">
                 <h2 className="text-xl font-bold mb-4">Sign as {recipient.email}</h2>
-                <SignatureAdd documentId={documentId} recipientId={signatureId} />
+                <SignatureAdd documentId={documentId} recipientId={recipientId} />
             </div>
         </div>
     );
