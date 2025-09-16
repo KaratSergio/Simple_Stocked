@@ -19,7 +19,7 @@ export const DynamicForm = ({ template, values, onChange }: DynamicFormProps) =>
               placeholder="Enter text"
               value={values[el.id] as string || ""}
               onChange={e => onChange(el.id, e.target.value)}
-              className="border p-2 w-full"
+              className="border p-2 w-full min-h-[400px]"
             />
           );
         }
@@ -33,17 +33,18 @@ export const DynamicForm = ({ template, values, onChange }: DynamicFormProps) =>
                 <div key={idx} className="flex items-center space-x-2">
                   <input
                     type="text"
-                    placeholder="Name"
+                    placeholder="Enter recipient name"
                     value={r.name}
                     onChange={e => handleRecipientChange(el.id, idx, "name", e.target.value)}
-                    className="border p-2 w-1/2"
+                    className="border p-2 w-1/4"
                   />
+
                   <input
                     type="text"
                     placeholder="Signature Base64"
                     value={r.signature || ""}
                     onChange={e => handleRecipientChange(el.id, idx, "signature", e.target.value)}
-                    className="border p-2 w-1/2"
+                    className="border p-2 w-1/2 hidden"
                   />
                 </div>
               ))}

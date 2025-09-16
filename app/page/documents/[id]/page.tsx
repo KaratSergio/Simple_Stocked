@@ -3,7 +3,7 @@ import { RecipientAdd } from "@/components/recipients";
 
 export default function DocumentPage({ params: { id } }: { params: { id: string } }) {
     return (
-        <div className="flex gap-8 p-8">
+        <div className="flex gap-8">
             {/* Left: PDF */}
             <div className="">
                 <Document documentId={id} />

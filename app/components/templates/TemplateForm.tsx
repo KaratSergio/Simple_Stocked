@@ -73,21 +73,27 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
   };
 
   return (
-    <div className="flex flex-col space-y-4">
-      <div className="flex space-x-2">
-        <input
-          value={editorData.name}
-          onChange={e => setEditorData(prev => ({ ...prev, name: e.target.value }))}
-          placeholder="Template Name"
-          className="border p-2 w-full"
-        />
+    <div className="flex gap-4">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col">
+          <label className="mb-1 text-sm font-medium text-gray-700">Template name:</label>
+          <input
+            value={editorData.name}
+            onChange={e => setEditorData(prev => ({ ...prev, name: e.target.value }))}
+            placeholder="Enter template name"
+            className="border p-2 w-full"
+          />
+        </div>
 
-        <input
-          type="file"
-          accept="application/pdf"
-          onChange={e => setPdfFile(e.target.files?.[0] || null)}
-          className="border p-2 w-full bg-gray-100 text-black"
-        />
+        <div className="flex flex-col">
+          <label className="mb-1 text-sm font-medium text-gray-700">Upload base pdf:</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={e => setPdfFile(e.target.files?.[0] || null)}
+            className="border p-2 w-full bg-gray-100 text-black"
+          />
+        </div>
 
         <button
           onClick={handleSave}
@@ -98,7 +104,7 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
         </button>
       </div>
 
-      <div className="border w-full h-[700px] flex items-center justify-center bg-gray-50">
+      <div className="border w-full h-[840px] flex items-center justify-center bg-gray-50">
         {pdfFile || currentPdfUrl ? (
           <embed
             src={pdfFile ? URL.createObjectURL(pdfFile) : currentPdfUrl || ""}

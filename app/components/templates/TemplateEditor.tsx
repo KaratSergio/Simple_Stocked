@@ -10,8 +10,8 @@ export const TemplateEditor = <Data extends TemplateData = TemplateData>({
     const defaultTextarea: TextareaElement = { id: 'textarea_1', type: 'textarea', value: '' };
     // Default 2 recipients
     const defaultRecipients: Recipient[] = [
-        { id: '1', name: 'Recipient 1', email: '', signature: null },
-        { id: '2', name: 'Recipient 2', email: '', signature: null },
+        { id: '1', name: '', email: '', signature: null },
+        { id: '2', name: '', email: '', signature: null },
     ];
 
     // If initial data exists, return as is

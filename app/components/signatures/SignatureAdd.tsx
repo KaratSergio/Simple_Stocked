@@ -1,17 +1,13 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
+import { SignAddProps } from "./types";
 
-interface Props {
-    documentId: string;
-    recipientId: string;
-}
-
-export function SignatureAdd({ documentId, recipientId }: Props) {
+export function SignatureAdd({ documentId, recipientId }: SignAddProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [loading, setLoading] = useState(false);
     const [drawing, setDrawing] = useState(false);
 
-    // Настройка контекста для рисования
+    // Setting up the drawing context
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -24,7 +20,7 @@ export function SignatureAdd({ documentId, recipientId }: Props) {
         ctx.strokeStyle = "#000";
     }, []);
 
-    // Начало рисования
+    // Start drawing
     const handleMouseDown = (e: React.MouseEvent) => {
         setDrawing(true);
         const canvas = canvasRef.current;
@@ -37,7 +33,7 @@ export function SignatureAdd({ documentId, recipientId }: Props) {
         ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
     };
 
-    // Рисование
+    // Drawing
     const handleMouseMove = (e: React.MouseEvent) => {
         if (!drawing) return;
         const canvas = canvasRef.current;
@@ -50,7 +46,7 @@ export function SignatureAdd({ documentId, recipientId }: Props) {
         ctx.stroke();
     };
 
-    // Конец рисования
+    // End of drawing
     const handleMouseUp = () => setDrawing(false);
     const handleMouseLeave = () => setDrawing(false);
 

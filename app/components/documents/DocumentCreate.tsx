@@ -73,34 +73,40 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 flex flex-col">
       <h1 className="text-2xl font-bold">Create Document</h1>
 
-      <input
-        type="text"
-        placeholder="Document title"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-        className="input"
-      />
+      <div className="flex gap-2">
+        <input
+          type="text"
+          placeholder="Document title"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          className="border p-2"
+        />
 
-      <TemplateSelect
-        templates={templates.map(t => ({ id: t.id, name: t.name }))}
-        selectedId={selectedId}
-        onSelect={handleSelect}
-      />
+        <TemplateSelect
+          templates={templates.map(t => ({ id: t.id, name: t.name }))}
+          selectedId={selectedId}
+          onSelect={handleSelect}
+        />
+      </div>
 
       {template && (
-        <DynamicForm
-          template={template}
-          values={values}
-          onChange={handleChange}
-        />
+        <>
+          <DynamicForm
+            template={template}
+            values={values}
+            onChange={handleChange}
+          />
+
+          <button onClick={handleSubmit} className="btn mt-2 bg-teal-900 p-2 text-white">
+            Create Document
+          </button>
+        </>
       )}
 
-      <button onClick={handleSubmit} className="btn mt-2">
-        Create Document
-      </button>
+
     </div>
   );
 };
