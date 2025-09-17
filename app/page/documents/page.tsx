@@ -3,8 +3,6 @@ import { DocumentList } from "@/components/documents";
 import { Files } from "lucide-react";
 
 export default function DocumentsPage() {
-    const ownerId = 5; // TO DO hardcode need to change
-
     return (
         <div className=" space-y-4">
             {/* create doc */}
@@ -18,7 +16,7 @@ export default function DocumentsPage() {
 
             {/* doc list */}
             <div className="mt-4">
-                <DocumentList ownerId={ownerId} />
+                <DocumentList />
             </div>
         </div>
     );

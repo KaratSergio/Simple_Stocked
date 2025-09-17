@@ -24,3 +24,10 @@ export async function loginUser({ email, password }: LoginDTO): Promise<User | n
   const { id, email: userEmail, name, created_at } = dbUser;
   return { id, email: userEmail, name, created_at } as User;
 }
+
+/**
+ * Get User data by ID
+ */
+export async function getUser(id: number): Promise<User | null> {
+  return userRepo.getUserById(id);
+}

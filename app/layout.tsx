@@ -1,18 +1,22 @@
-import './shared/styles/globals.css';
 import { Metadata } from 'next';
+import { ReactNode } from 'react';
+import QueryProvider from "./providers/QueryProvider";
+import './shared/styles/globals.css';
 
 export const metadata: Metadata = {
-  title: 'Doc SP',
+  title: 'DSP Service',
   description: 'Document Signing Platform (DSP-service)',
-  icons: {
-    icon: '/favicon.ico',
-  },
+  icons: { icon: '/favicon.ico' },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <QueryProvider>
+          {children}
+        </QueryProvider>
+      </body>
     </html>
   );
 }

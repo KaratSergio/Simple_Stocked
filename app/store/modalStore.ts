@@ -1,16 +1,16 @@
-import { create } from 'zustand';
-import { ReactNode } from 'react';
+// import { create } from 'zustand';
+// import { ReactNode } from 'react';
 
-type ModalState = {
-    isOpen: boolean;
-    content: ReactNode | null;
-    openModal: (content: ReactNode) => void;
-    closeModal: () => void;
-}
+// type ModalState = {
+//     isOpen: boolean;
+//     content: ReactNode | null;
+//     openModal: (content: ReactNode) => void;
+//     closeModal: () => void;
+// }
 
-export const useModalStore = create<ModalState>((set) => ({
-    isOpen: false,
-    content: null,
-    openModal: (content) => set({ isOpen: true, content }),
-    closeModal: () => set({ isOpen: false, content: null }),
-}));
+// export const useModalStore = create<ModalState>((set) => ({
+//     isOpen: false,
+//     content: null,
+//     openModal: (content) => set({ isOpen: true, content }),
+//     closeModal: () => set({ isOpen: false, content: null }),
+// }));

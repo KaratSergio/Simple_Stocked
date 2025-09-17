@@ -1,19 +1,23 @@
 'use client';
-import { FC, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { DocumentListProps } from './types';
 import { extractDate } from '@/app/shared/utils';
 import { StatusBadge } from '../Badge';
+import { useUser } from "@/app/shared/hooks/useUser";
 
-export const DocumentList: FC<DocumentListProps> = ({ ownerId }) => {
+export const DocumentList = () => {
     const [loading, setLoading] = useState(false);
     const [documents, setDocuments] = useState<any[]>([]);
     const router = useRouter();
 
+    const { data: user } = useUser();
+
     const fetchDocuments = async () => {
+        if (!user) return;
+
         setLoading(true);
         try {
-            const res = await fetch(`/api/documents/list?ownerId=${ownerId}`);
+            const res = await fetch(`/api/documents/list?ownerId=${user.id}`);
             const data = await res.json();
             if (data.success) setDocuments(data.data);
         } finally {
@@ -21,7 +25,7 @@ export const DocumentList: FC<DocumentListProps> = ({ ownerId }) => {
         }
     };
 
-    useEffect(() => { void fetchDocuments() }, [ownerId]);
+    useEffect(() => { void fetchDocuments() }, [user.id]);
 
     if (loading) return <p>Loading documents...</p>;
     if (!documents.length) return <p>No documents found.</p>;

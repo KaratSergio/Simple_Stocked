@@ -1,8 +1,8 @@
 import * as userService from "@/server/services/user.service";
 import * as authService from "@/server/services/auth.service";
 import { validateRegistration, validateLogin, userExists } from "@/server/utils/validators";
+import type { RegistrationDTO, LoginDTO, UserWithTokens, User } from "@/server/types/user.types";
 import { logAuthEvent } from "@/server/utils/logAuth";
-import type { RegistrationDTO, LoginDTO, UserWithTokens } from "@/server/types/user.types";
 
 /**
  * Registration: create user + issue tokens
@@ -74,4 +74,15 @@ export async function refresh(oldRefreshToken: string, deviceInfo?: string, ip?:
   await logAuthEvent("refresh", payload.userId, { ip, deviceInfo });
 
   return authService.rotateRefreshToken(payload.userId, oldRefreshToken, deviceInfo, ip);
+}
+
+export async function getUser(accessToken: string): Promise<User> {
+  const payload = authService.verifyAccessJWT(accessToken);
+  if (!payload?.userId) throw new Error("Invalid or missing token");
+
+  const user = await userService.getUser(payload.userId);
+  if (!user) throw new Error("User not found");
+
+  // await logAuthEvent("get_user", user.id, {});
+  return user;
 }

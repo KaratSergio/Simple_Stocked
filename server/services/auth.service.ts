@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import { randomBytes } from "crypto";
 import argon2 from "argon2";
 import * as refreshRepo from "@/server/data/repo/refresh.token.repository";
 
@@ -17,7 +16,6 @@ export function generateAccessToken(userId: number) {
 // ---------------- REFRESH ----------------
 
 export function generateRefreshToken(userId: number) {
-  // JWT вместо raw random token
   return jwt.sign({ userId }, REFRESH_SECRET, { expiresIn: `${REFRESH_EXPIRES_DAYS}d` });
 }
 
@@ -71,9 +69,7 @@ export async function revokeRefreshToken(userId: number, rawToken: string) {
     allTokens.map(async t => (await argon2.verify(t.token_hash, rawToken).catch(() => false)) ? t : null)
   ).then(r => r.find(Boolean));
 
-  if (!matched) {
-    throw new Error("Refresh token not found");
-  }
+  if (!matched) throw new Error("Refresh token not found");
 
   return refreshRepo.revokeRefreshTokenByHash(matched.token_hash);
 }
@@ -86,3 +82,12 @@ export async function deleteExpiredTokens() {
   return refreshRepo.deleteExpiredTokens();
 }
 
+// ---------------- VERIFY ACCESS ----------------
+
+export function verifyAccessJWT(token: string): { userId: number } | null {
+  try {
+    return jwt.verify(token, ACCESS_SECRET) as { userId: number };
+  } catch (err) {
+    return null;
+  }
+}

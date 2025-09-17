@@ -14,10 +14,6 @@ export interface DocumentProps {
     documentId: string;
 }
 
-export interface DocumentListProps {
-    ownerId: number;
-}
-
 // ============================
 // Dynamic Form
 // ============================

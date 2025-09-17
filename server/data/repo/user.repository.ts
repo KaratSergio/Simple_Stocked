@@ -16,3 +16,9 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   const result = await query(sql, [email]);
   return result.rows[0] ?? null;
 }
+
+export async function getUserById(id: number): Promise<User | null> {
+  const sql = loadQuery(basePath, 'getById.sql');
+  const result = await query(sql, [id]);
+  return result.rows[0] ?? null;
+}
