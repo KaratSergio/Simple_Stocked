@@ -1,4 +1,5 @@
 'use client';
+
 import { useQuery } from '@tanstack/react-query';
 
 async function fetchUser() {
@@ -11,7 +12,7 @@ export function useUser() {
     return useQuery({
         queryKey: ['user'],
         queryFn: fetchUser,
-        staleTime: 1000 * 60 * 5, // 5 min
+        staleTime: 1000 * 60 * 60 * 24,  // 1 day
         retry: false,
     });
 }

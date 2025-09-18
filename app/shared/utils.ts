@@ -12,6 +12,6 @@ export function getErrorMessage(
 }
 
 // format date 2025-09-05T06:27:11.619Z to 2025-09-05
-export function extractDate(isoString: string): string {
+export function formatDate(isoString: string): string {
     return isoString.split("T")[0];
 }

@@ -1,6 +1,13 @@
 import { DocumentTemplate } from "../templates/types";
 import { Recipient } from "../recipients/types";
 
+export interface Document {
+    id: string;
+    title: string;
+    status: string;
+    created_at: string;
+}
+
 // ============================
 // Documents & Lists
 // ============================
