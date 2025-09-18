@@ -1,23 +1,15 @@
-import Link from "next/link";
 import { DocumentList } from "@/components/documents";
-import { Files } from "lucide-react";
+import { List } from "lucide-react";
 
 export default function DocumentsPage() {
     return (
         <div className=" space-y-4">
-            {/* create doc */}
-            <Link href="/page/documents/create" className="w-fit flex gap-1 text-teal-900 py-1">
-                <Files />
-                Add New Document
-            </Link>
-
-
-            <h1 className="text-2xl font-bold">Documents</h1>
-
-            {/* doc list */}
-            <div className="mt-4">
-                <DocumentList />
+            <div className="flex items-center gap-2 mb-4">
+                <List size={32} className="text-teal-900" />
+                <h1 className="text-2xl font-bold text-teal-900">list of Documents</h1>
             </div>
+
+            <DocumentList />
         </div>
     );
 }

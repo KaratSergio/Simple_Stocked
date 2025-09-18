@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { TemplateEditor } from "./TemplateEditor";
 import { TemplateData, TemplateFormProps } from "./types";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, FileCode2 } from "lucide-react";
 
 export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
   const [editorData, setEditorData] = useState<TemplateData>({ name: "", elements: [] });
@@ -81,6 +81,11 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
   return (
     <div className="flex gap-4">
       <div className="flex flex-col gap-4">
+        <div className="flex gap-2 align-center mb-4">
+          <FileCode2 size={32} className="text-teal-900" />
+          <h1 className="text-2xl font-bold text-teal-900">create a Template</h1>
+        </div>
+
         <div className="flex flex-col">
           <label className="mb-1 text-sm font-medium text-gray-700">Template name:</label>
           <input
@@ -128,7 +133,7 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
         </button>
       </div>
 
-      <div className="border w-full h-[840px] flex items-center justify-center bg-gray-50">
+      <div className="border w-full h-[822px] flex items-center justify-center bg-gray-50">
         {pdfFile || currentPdfUrl ? (
           <embed
             src={pdfFile ? URL.createObjectURL(pdfFile) : currentPdfUrl || ""}
