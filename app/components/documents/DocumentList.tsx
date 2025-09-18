@@ -12,6 +12,10 @@ export const DocumentList = () => {
 
     const { data: user } = useUser();
 
+    console.log('====================================');
+    console.log('user', user);
+    console.log('====================================');
+
     const fetchDocuments = async () => {
         if (!user) return;
 
@@ -25,7 +29,7 @@ export const DocumentList = () => {
         }
     };
 
-    useEffect(() => { void fetchDocuments() }, [user.id]);
+    useEffect(() => { void fetchDocuments() }, [user?.id]);
 
     if (loading) return <p>Loading documents...</p>;
     if (!documents.length) return <p>No documents found.</p>;
