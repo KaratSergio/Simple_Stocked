@@ -27,11 +27,11 @@ export const Document = ({ documentId }: DocumentProps) => {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold">{document.title}</h1>
+            <h1 className="text-2xl font-bold mb-2">{document.title}</h1>
             <iframe
                 src={publicPdfUrl}
                 width="900px"
-                height="851px"
+                height="800px"
                 className="border"
             />
         </div>

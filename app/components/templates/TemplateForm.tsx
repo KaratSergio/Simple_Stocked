@@ -2,12 +2,14 @@
 import { useState, useEffect } from "react";
 import { TemplateEditor } from "./TemplateEditor";
 import { TemplateData, TemplateFormProps } from "./types";
+import { ChevronDown } from "lucide-react";
 
 export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
   const [editorData, setEditorData] = useState<TemplateData>({ name: "", elements: [] });
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [currentPdfUrl, setCurrentPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [recipient, setRecipient] = useState(2);
 
   // Load template from server
   useEffect(() => {
@@ -33,8 +35,12 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
 
   // Initialize template (textarea + recipients)
   useEffect(() => {
-    TemplateEditor({ initialData: editorData, onChange: setEditorData });
-  }, [editorData.name]);
+    TemplateEditor({
+      initialData: editorData,
+      onChange: setEditorData,
+      recipientCount: recipient,
+    });
+  }, [editorData.name, recipient]);
 
   const handleSave = async () => {
     if (!editorData.name) return;
@@ -81,8 +87,26 @@ export const TemplateForm = ({ templateId, onSaved }: TemplateFormProps) => {
             value={editorData.name}
             onChange={e => setEditorData(prev => ({ ...prev, name: e.target.value }))}
             placeholder="Enter template name"
-            className="border p-2 w-full"
+            className="border p-2 w-full  bg-gray-100"
           />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="mb-1 text-sm font-medium text-gray-700">Recipients:</label>
+          <div className="relative w-full">
+            <select
+              value={recipient}
+              onChange={e => setRecipient(Number(e.target.value))}
+              className="appearance-none border p-2 pr-8 w-full bg-gray-100 text-black"
+            >
+              {[1, 2, 3, 4].map(n => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+              <ChevronDown size={16} className="text-gray-600" />
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-col">

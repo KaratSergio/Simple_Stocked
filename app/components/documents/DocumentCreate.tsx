@@ -82,7 +82,7 @@ export const DocumentCreate = ({ ownerId }: { ownerId: number }) => {
           placeholder="Document title"
           value={title}
           onChange={e => setTitle(e.target.value)}
-          className="border p-2"
+          className="border p-2 bg-gray-100"
         />
 
         <TemplateSelect

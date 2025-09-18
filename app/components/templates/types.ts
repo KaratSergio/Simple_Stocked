@@ -51,6 +51,7 @@ export interface TemplateData<Elements extends AnyDocumentElement[] = AnyDocumen
 
 export interface TemplateEditorProps<Data extends TemplateData = TemplateData> {
     initialData?: Data;
+    recipientCount: number
     onChange?: (data: Data) => void;
 }
 

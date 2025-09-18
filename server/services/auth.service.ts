@@ -13,6 +13,14 @@ export function generateAccessToken(userId: number) {
   return jwt.sign({ userId }, ACCESS_SECRET, { expiresIn: ACCESS_EXPIRES });
 }
 
+export function verifyAccessJWT(token: string): { userId: number } | null {
+  try {
+    return jwt.verify(token, ACCESS_SECRET) as { userId: number };
+  } catch (err) {
+    return null;
+  }
+}
+
 // ---------------- REFRESH ----------------
 
 export function generateRefreshToken(userId: number) {
@@ -44,7 +52,6 @@ export async function issueTokens(userId: number, deviceInfo?: string, ip?: stri
 
   return { accessToken, refreshToken };
 }
-
 
 export async function rotateRefreshToken(userId: number, oldRawRefresh: string, deviceInfo?: string, ip?: string) {
   const allTokens = await refreshRepo.getAllTokensByUser(userId);
@@ -80,14 +87,4 @@ export async function revokeAllUserTokens(userId: number) {
 
 export async function deleteExpiredTokens() {
   return refreshRepo.deleteExpiredTokens();
-}
-
-// ---------------- VERIFY ACCESS ----------------
-
-export function verifyAccessJWT(token: string): { userId: number } | null {
-  try {
-    return jwt.verify(token, ACCESS_SECRET) as { userId: number };
-  } catch (err) {
-    return null;
-  }
 }

@@ -4,15 +4,19 @@ import { Recipient } from "../recipients/types";
 export const TemplateEditor = <Data extends TemplateData = TemplateData>({
     initialData,
     onChange,
+    recipientCount = 2,
 }: TemplateEditorProps<Data>): Data => {
 
     // Default textarea element
     const defaultTextarea: TextareaElement = { id: 'textarea_1', type: 'textarea', value: '' };
     // Default 2 recipients
-    const defaultRecipients: Recipient[] = [
-        { id: '1', name: '', email: '', signature: null },
-        { id: '2', name: '', email: '', signature: null },
-    ];
+    const generateRecipients = (count: number): Recipient[] =>
+        Array.from({ length: count }, (_, i) => ({
+            id: String(i + 1),
+            name: "",
+            email: "",
+            signature: null,
+        }));
 
     // If initial data exists, return as is
     if (initialData?.elements?.length) {
@@ -20,7 +24,12 @@ export const TemplateEditor = <Data extends TemplateData = TemplateData>({
             if (el.type === 'signature') {
                 return {
                     ...el,
-                    value: (el.value && el.value.length) ? el.value : defaultRecipients
+                    value:
+                        el.value && el.value.length
+                            ? el.value.slice(0, recipientCount).concat(
+                                generateRecipients(recipientCount).slice(el.value.length)
+                            )
+                            : generateRecipients(recipientCount),
                 };
             }
             return el;
@@ -42,7 +51,7 @@ export const TemplateEditor = <Data extends TemplateData = TemplateData>({
         type: 'signature',
         pageRepeat: true,
         position: 'bottom',
-        value: defaultRecipients,
+        value: generateRecipients(recipientCount),
     };
 
     const templateData = {

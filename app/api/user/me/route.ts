@@ -3,13 +3,12 @@ import * as userController from "@/server/controllers/user.controller";
 
 export async function GET(req: NextRequest) {
     try {
-        const accessToken = req.cookies.get("accessToken")?.value;
+        const refreshToken = req.cookies.get("refreshToken")?.value;
+        if (!refreshToken) return NextResponse.json({ error: "No refresh token" }, { status: 401 });
 
-        if (!accessToken) return NextResponse.json({ error: "No access token" }, { status: 401 });
+        const user = await userController.getUser(refreshToken);
 
-        const user = await userController.getUser(accessToken);
-
-        return NextResponse.json({ id: user.id, name: user.name, email: user.email });
+        return NextResponse.json(user);
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 401 });
     }

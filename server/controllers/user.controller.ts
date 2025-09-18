@@ -76,13 +76,16 @@ export async function refresh(oldRefreshToken: string, deviceInfo?: string, ip?:
   return authService.rotateRefreshToken(payload.userId, oldRefreshToken, deviceInfo, ip);
 }
 
-export async function getUser(accessToken: string): Promise<User> {
-  const payload = authService.verifyAccessJWT(accessToken);
-  if (!payload?.userId) throw new Error("Invalid or missing token");
+/**
+ * User: get user data
+ */
+export async function getUser(rawRefreshToken: string): Promise<User> {
+  // check refresh token
+  const payload = authService.verifyRefreshJWT(rawRefreshToken);
+  if (!payload?.userId) throw new Error("Invalid refresh token");
 
   const user = await userService.getUser(payload.userId);
   if (!user) throw new Error("User not found");
 
-  // await logAuthEvent("get_user", user.id, {});
   return user;
 }
