@@ -1,8 +1,9 @@
 'use client';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import LogoutButton from './auth/LogoutBtn';
+import { LogoutButton } from './auth/LogoutButton';
 import {
     Home, FileType, FileText,
     Edit3, Settings, ChevronDown
@@ -89,6 +90,7 @@ export default function Sidebar() {
                     </div>
                 );
             })}
+
             <LogoutButton />
         </aside>
     );

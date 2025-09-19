@@ -37,6 +37,7 @@ export function clearAuthCookies(res: NextResponse) {
     name: "accessToken",
     value: "",
     maxAge: 0,
+    expires: new Date(0),
     ...COOKIE_OPTIONS,
   });
 
@@ -44,6 +45,7 @@ export function clearAuthCookies(res: NextResponse) {
     name: "refreshToken",
     value: "",
     maxAge: 0,
+    expires: new Date(0),
     ...COOKIE_OPTIONS,
   });
 }
