@@ -4,7 +4,9 @@ import * as userController from "@/server/controllers/user.controller";
 export async function GET(req: NextRequest) {
     try {
         const refreshToken = req.cookies.get("refreshToken")?.value;
-        if (!refreshToken) return NextResponse.json({ error: "No refresh token" }, { status: 401 });
+
+        if (!refreshToken)
+            return NextResponse.json({ error: "No refresh token" }, { status: 401 });
 
         const user = await userController.getUser(refreshToken);
 

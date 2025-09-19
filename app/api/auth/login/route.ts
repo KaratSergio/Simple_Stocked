@@ -10,9 +10,11 @@ export async function POST(req: NextRequest) {
 
     const user = await userController.login(body, deviceInfo, ip);
 
-    const res = NextResponse.json({ id: user.id, name: user.name, email: user.email });
-    setAuthCookies(res, user.accessToken, user.refreshToken);
-    return res;
+    const response = NextResponse.json({ id: user.id, name: user.name, email: user.email });
+
+    setAuthCookies(response, user.accessToken, user.refreshToken);
+
+    return response;
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 401 });
   }

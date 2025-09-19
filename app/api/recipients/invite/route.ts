@@ -7,10 +7,14 @@ export async function POST(req: NextRequest) {
         const { documentId, recipientId } = body;
 
         if (!documentId || !recipientId) {
-            return NextResponse.json({ success: false, error: "documentId and recipientId are required" }, { status: 400 });
+            return NextResponse.json(
+                { success: false, error: "documentId and recipientId are required" },
+                { status: 400 }
+            );
         }
 
         await recipientController.inviteRecipient(recipientId, documentId);
+
         return NextResponse.json({ success: true });
     } catch (err: any) {
         console.error("Send invite error:", err);

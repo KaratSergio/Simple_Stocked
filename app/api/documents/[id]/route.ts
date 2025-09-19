@@ -3,7 +3,7 @@ import * as documentController from "@/server/controllers/document.controller";
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     try {
-        const id = Number(params.id);
+        const id = params.id;
         if (!id) return NextResponse.json({ error: "Document ID required" }, { status: 400 });
 
         const doc = await documentController.getDocument(id);

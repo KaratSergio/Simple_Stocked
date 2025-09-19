@@ -6,18 +6,19 @@ import { getRequestInfo } from "@/server/utils/requestInfo";
 export async function POST(req: NextRequest) {
   const oldRefreshToken = req.cookies.get("refreshToken")?.value;
 
-  console.log('res', oldRefreshToken)
-
-  if (!oldRefreshToken) return NextResponse.json({ error: "No refresh token provided" }, { status: 401 });
+  if (!oldRefreshToken)
+    return NextResponse.json({ error: "No refresh token provided" }, { status: 401 });
 
   const { ip, deviceInfo } = getRequestInfo(req);
 
   try {
     const tokens = await userController.refresh(oldRefreshToken, deviceInfo, ip);
 
-    const res = NextResponse.json({ ok: true });
-    setAuthCookies(res, tokens.accessToken, tokens.refreshToken);
-    return res;
+    const response = NextResponse.json({ ok: true });
+
+    setAuthCookies(response, tokens.accessToken, tokens.refreshToken);
+
+    return response;
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 401 });
   }

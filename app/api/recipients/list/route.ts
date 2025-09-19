@@ -5,16 +5,15 @@ export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const documentId = searchParams.get("documentId");
-        // const ownerId = searchParams.get("ownerId");
-        const ownerId = 5
+        const ownerId = searchParams.get("ownerId");
 
         let recipients;
 
         if (documentId) {
-            // Получаем ресипиентов документа
+            // Get document recipients
             recipients = await recipientController.listRecipientsByDocument(documentId);
         } else if (ownerId) {
-            // Получаем всех ресипиентов владельца
+            // Get all recipients of the owner
             recipients = await recipientController.listRecipientsByOwner(Number(ownerId));
         } else {
             throw new Error("Either documentId or ownerId query required");

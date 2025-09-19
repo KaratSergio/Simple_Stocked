@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
         }
 
         const doc = await documentController.updateDocumentStatus(documentId, status, pdfGenerated);
+
         return NextResponse.json({ success: true, data: doc }, { status: 200 });
     } catch (err: any) {
         return NextResponse.json({ success: false, error: err.message }, { status: 500 });

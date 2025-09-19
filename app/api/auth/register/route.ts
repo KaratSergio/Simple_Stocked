@@ -10,9 +10,14 @@ export async function POST(req: NextRequest) {
 
     const user = await userController.register(body, deviceInfo, ip);
 
-    const res = NextResponse.json({ id: user.id, name: user.name, email: user.email }, { status: 201 });
-    setAuthCookies(res, user.accessToken, user.refreshToken);
-    return res;
+    const response = NextResponse.json(
+      { id: user.id, name: user.name, email: user.email },
+      { status: 201 }
+    );
+
+    setAuthCookies(response, user.accessToken, user.refreshToken);
+
+    return response;
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 400 });
   }

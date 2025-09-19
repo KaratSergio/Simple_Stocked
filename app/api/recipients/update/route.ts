@@ -7,10 +7,14 @@ export async function POST(req: NextRequest) {
         const { recipientId, email } = body;
 
         if (!recipientId || !email) {
-            return NextResponse.json({ success: false, error: "recipientId and email are required" }, { status: 400 });
+            return NextResponse.json(
+                { success: false, error: "recipientId and email are required" },
+                { status: 400 }
+            );
         }
 
         const updatedRecipient = await recipientController.updateRecipient(recipientId, email);
+
         return NextResponse.json({ success: true, data: updatedRecipient });
     } catch (err: any) {
         console.error("Update recipient email error:", err);
