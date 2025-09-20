@@ -34,7 +34,7 @@ export async function createDocument(
         for (const recipient of values.recipients) {
             const savedRecipient = await recipientRepo.addRecipient(doc.id, recipient.name, recipient.email ?? "");
             recipientsWithIds.push({
-                id: savedRecipient.id, // id from DB recipient table
+                id: savedRecipient.id.toString(), // id from DB recipient table
                 name: recipient.name,
                 email: recipient.email ?? "",
                 signature: recipient.signature ?? null,
@@ -56,12 +56,14 @@ export async function createDocument(
     return doc;
 }
 
-export async function getDocumentById(id: string): Promise<Document | null> {
+export async function getDocumentById(id: string):
+    Promise<Document | null> {
     if (!id) throw new Error("Document ID is required");
     return documentRepo.getDocumentById(id);
 }
 
-export async function listDocumentsByOwner(ownerId: number): Promise<Document[]> {
+export async function listDocumentsByOwner(ownerId: number):
+    Promise<Document[]> {
     if (!ownerId) throw new Error("Owner ID is required");
     return documentRepo.listDocumentsByOwner(ownerId);
 }

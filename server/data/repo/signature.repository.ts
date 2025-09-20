@@ -7,7 +7,7 @@ const basePath = path.join(process.cwd(), "server/data/sql/queries/signatures");
 
 export async function addSignature(
     documentId: string,
-    recipientId: number,
+    recipientId: string,
     signatureData: string
 ): Promise<Signature> {
     const sql = loadQuery(basePath, "add.sql");

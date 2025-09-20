@@ -15,13 +15,15 @@ export async function createTemplate(
     return result.rows[0];
 }
 
-export async function getTemplateById(id: number): Promise<DocumentTemplate | null> {
+export async function getTemplateById(id: number):
+    Promise<DocumentTemplate | null> {
     const sql = loadQuery(basePath, "getById.sql");
     const result = await query(sql, [id]);
     return result.rows[0] ?? null;
 }
 
-export async function listTemplates(): Promise<DocumentTemplate[]> {
+export async function listTemplates():
+    Promise<DocumentTemplate[]> {
     const sql = loadQuery(basePath, "list.sql");
     const result = await query(sql);
     return result.rows;

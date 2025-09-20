@@ -12,11 +12,13 @@ export async function createTemplate(
     return templateRepo.createTemplate(name, jsonSchema, pdfBase);
 }
 
-export async function getTemplateById(id: number): Promise<DocumentTemplate | null> {
+export async function getTemplateById(id: number):
+    Promise<DocumentTemplate | null> {
     if (!id) throw new Error("Template ID is required");
     return templateRepo.getTemplateById(id);
 }
 
-export async function listTemplates(): Promise<DocumentTemplate[]> {
+export async function listTemplates():
+    Promise<DocumentTemplate[]> {
     return templateRepo.listTemplates();
 }

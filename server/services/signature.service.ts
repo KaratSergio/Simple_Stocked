@@ -7,7 +7,7 @@ import { uploadPdf } from "../utils/s3Storage";
 
 export async function addSignature(
     documentId: string,
-    recipientId: number,
+    recipientId: string,
     signatureData: string
 ): Promise<Signature> {
     console.log("[addSignature] called", { documentId, recipientId });
@@ -18,43 +18,68 @@ export async function addSignature(
 
     // 1. Сохраняем подпись
     const signature = await signatureRepo.addSignature(documentId, recipientId, signatureData);
-    console.log("[addSignature] Signature saved", signature);
 
     // 2. Получаем документ
     const doc = await documentRepo.getDocumentById(documentId);
-    console.log("[addSignature] Document fetched", doc);
     if (!doc) throw new Error("Document not found");
 
-    // 3. Обновляем values
+    // 3. Обновляем values.recipients
     const updatedValues = { ...doc.values };
+
+    console.log("[addSignature] Before update:", JSON.stringify(updatedValues.recipients, null, 2));
+
     if (Array.isArray(updatedValues.recipients)) {
         updatedValues.recipients = updatedValues.recipients.map((r: any) =>
-            r.id === recipientId ? { ...r, signature: signatureData } : r
+            r.id === recipientId
+                ? { ...r, signature: signatureData, signed_at: new Date().toISOString() }
+                : r
         );
     }
-    console.log("[addSignature] Updated values", updatedValues);
 
-    // 4. Берём схему из шаблона
+    // if (Array.isArray(updatedValues.recipients)) {
+    //     updatedValues.recipients = updatedValues.recipients.map((r: any) => {
+    //         const match = r.id.toString() === recipientId.toString();
+    //         if (match) {
+    //             console.log("[addSignature] Matching recipient:", r);
+    //         }
+    //         return match
+    //             ? { ...r, signature: signatureData, signed_at: new Date().toISOString() }
+    //             : r;
+    //     });
+    // }
+
+    console.log("[addSignature] After update:", JSON.stringify(updatedValues.recipients, null, 2));
+
+    // 4. Берём шаблон
     const template = await templateRepo.getTemplateById(doc.template_id);
-    console.log("[addSignature] Template fetched", template);
     if (!template) throw new Error("Template not found");
 
-    // 5. Генерируем PDF
+    // 5. Генерируем новый PDF
     const pdfBytes = await generatePdf(template.json_schema, updatedValues, template.pdf_base);
-    console.log("[addSignature] PDF generated, bytes length:", pdfBytes.length);
 
-    // 6. Перезаписываем PDF в S3 по старому ключу
+    // 6. Загружаем в S3
     const oldUrl = doc.pdf_generated;
-    const key = oldUrl?.replace(`https://${process.env.S3_BUCKET}.r2.cloudflarestorage.com/`, "");
+    const key = oldUrl?.replace(
+        `https://${process.env.S3_BUCKET}.r2.cloudflarestorage.com/`,
+        ""
+    );
     const pdfUrl = await uploadPdf(pdfBytes, key);
-    console.log("[addSignature] PDF uploaded", { pdfUrl, key });
 
-    // 7. Обновляем документ
-    await documentRepo.updateDocumentStatus(documentId, "signed", pdfUrl, updatedValues);
-    console.log("[addSignature] Document updated");
+    // 7. Определяем статус
+    let newStatus: "pending" | "signed" = "signed";
+    if (
+        Array.isArray(updatedValues.recipients) &&
+        updatedValues.recipients.some((r: any) => !r.signature)
+    ) {
+        newStatus = "pending";
+    }
+
+    // 8. Обновляем документ
+    await documentRepo.updateDocumentStatus(documentId, newStatus, pdfUrl, updatedValues);
 
     return signature;
 }
+
 
 export async function listSignatures(documentId: string): Promise<Signature[]> {
     if (!documentId) throw new Error("Document ID is required");

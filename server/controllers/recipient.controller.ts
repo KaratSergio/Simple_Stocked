@@ -17,10 +17,10 @@ export async function listRecipientsByOwner(ownerId: number): Promise<Recipient[
     return recipientService.listRecipientsByOwner(ownerId);
 }
 
-export async function updateRecipient(recipientId: number, email: string): Promise<Recipient> {
+export async function updateRecipient(recipientId: string, email: string): Promise<Recipient> {
     return recipientService.updateRecipient(recipientId, email);
 }
 
-export async function inviteRecipient(recipientId: number, documentId: string): Promise<void> {
+export async function inviteRecipient(recipientId: string, documentId: string): Promise<void> {
     await recipientService.inviteRecipient(documentId, recipientId);
 }

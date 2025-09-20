@@ -17,7 +17,7 @@ export async function addRecipient(
 }
 
 export async function updateRecipientStatus(
-    recipientId: number,
+    recipientId: string,
     status: "pending" | "signed" | "declined"
 ): Promise<Recipient> {
     const sql = loadQuery(basePath, "updateStatus.sql");
@@ -25,19 +25,22 @@ export async function updateRecipientStatus(
     return result.rows[0];
 }
 
-export async function listRecipientsByDocument(documentId: string): Promise<Recipient[]> {
+export async function listRecipientsByDocument(documentId: string):
+    Promise<Recipient[]> {
     const sql = loadQuery(basePath, "listByDocument.sql");
     const result = await query(sql, [documentId]);
     return result.rows;
 }
 
-export async function listRecipientsByOwner(ownerId: number): Promise<Recipient[]> {
+export async function listRecipientsByOwner(ownerId: number):
+    Promise<Recipient[]> {
     const sql = loadQuery(basePath, "listByOwner.sql");
     const result = await query(sql, [ownerId]);
     return result.rows;
 }
 
-export async function getRecipientById(recipientId: number): Promise<Recipient | null> {
+export async function getRecipientById(recipientId: string):
+    Promise<Recipient | null> {
     const sql = loadQuery(basePath, "getById.sql");
     const result = await query(sql, [recipientId]);
     return result.rows[0] || null;
@@ -45,7 +48,7 @@ export async function getRecipientById(recipientId: number): Promise<Recipient |
 
 // Update recipient email (or other fields in the future)
 export async function updateRecipient(
-    recipientId: number,
+    recipientId: string,
     email: string
 ): Promise<Recipient> {
     const sql = loadQuery(basePath, "updateEmail.sql");

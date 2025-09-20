@@ -3,7 +3,7 @@ import { Signature } from "@/server/types/signature.types";
 
 export async function addSignature(
     documentId: string,
-    recipientId: number,
+    recipientId: string,
     signatureData: string
 ): Promise<Signature> {
     return signatureService.addSignature(documentId, recipientId, signatureData);
