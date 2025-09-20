@@ -1,6 +1,6 @@
 'use client';
 import AuthForm from "@/components/auth/AuthForm";
-import { useRefresh } from "@/api/auth/refresh/useRefresh";
+import { useRefresh } from "@/app/shared/hooks/useRefresh";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
