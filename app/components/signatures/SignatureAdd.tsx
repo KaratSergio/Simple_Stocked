@@ -87,7 +87,7 @@ export function SignatureAdd({ documentId, recipientId }: SignAddProps) {
     };
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
             <canvas
                 ref={canvasRef}
                 width={400}
@@ -98,14 +98,14 @@ export function SignatureAdd({ documentId, recipientId }: SignAddProps) {
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseLeave}
             />
-            <div className="flex gap-2">
-                <button onClick={handleClear} className="btn">
+            <div className="flex">
+                <button onClick={handleClear} className="cursor-pointer hover:bg-gray-100 p-2 border-b border-l w-1/3">
                     Clear
                 </button>
                 <button
                     onClick={handleSign}
                     disabled={loading}
-                    className="btn bg-blue-500 text-white"
+                    className="bg-teal-950 hover:bg-teal-900 p-2 text-white cursor-pointer w-2/3"
                 >
                     {loading ? "Signing..." : "Sign Document"}
                 </button>

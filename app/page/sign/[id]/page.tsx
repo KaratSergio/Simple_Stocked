@@ -27,7 +27,7 @@ export default async function SignPage({ params, searchParams }: Props) {
     if (!publicPdfUrl) return <p>PDF not available yet</p>;
 
     return (
-        <div className="flex gap-8 p-8">
+        <div className="flex gap-8">
             {/* Left: PDF */}
             <div className="flex-1">
                 <iframe src={publicPdfUrl} width="100%" height="1200px" className="border" />
