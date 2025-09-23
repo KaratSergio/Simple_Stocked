@@ -3,8 +3,8 @@ import { getRecipientById } from "@/server/services/recipient.service";
 import { SignatureAdd } from "@/components/signatures";
 
 interface Props {
-    params: { id: string };
-    searchParams: { doc: string };
+    params: { id: number };
+    searchParams: { doc: number };
 }
 
 export default async function SignPage({ params, searchParams }: Props) {

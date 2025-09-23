@@ -18,7 +18,7 @@ export async function createDocument(
     return result.rows[0];
 }
 
-export async function getDocumentById(id: string): Promise<Document | null> {
+export async function getDocumentById(id: number): Promise<Document | null> {
     const sql = loadQuery(basePath, "getById.sql");
     const result = await query(sql, [id]);
     return result.rows[0] ?? null;
@@ -30,8 +30,8 @@ export async function listDocumentsByOwner(ownerId: number): Promise<Document[]>
     return result.rows;
 }
 
-export async function updateDocumentStatus(
-    id: string,
+export async function updateDocument(
+    id: number,
     status: string,
     pdfGenerated?: string,
     values?: any
@@ -41,7 +41,7 @@ export async function updateDocumentStatus(
     return result.rows[0];
 }
 
-export async function updateValues(id: string, values: any): Promise<Document> {
+export async function updateValues(id: number, values: any): Promise<Document> {
     const sql = loadQuery(basePath, "updateValues.sql");
     const result = await query(sql, [id, values]);
     return result.rows[0];

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export const RecipientList = ({ documentId }: { documentId: string }) => {
+export const RecipientList = ({ documentId }: { documentId: number }) => {
     const [recipients, setRecipients] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
 

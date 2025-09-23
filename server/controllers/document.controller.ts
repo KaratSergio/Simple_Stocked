@@ -18,13 +18,13 @@ export async function listDocuments(ownerId: number): Promise<Document[]> {
     return documentService.listDocumentsByOwner(ownerId);
 }
 
-export async function getDocument(id: string): Promise<Document | null> {
+export async function getDocument(id: number): Promise<Document | null> {
     if (!id) throw new Error("Document ID required");
 
     return documentService.getDocumentById(id);
 }
 
-export async function updateDocumentStatus(documentId: string, status: string, pdfGenerated?: string): Promise<Document> {
+export async function updateDocumentStatus(documentId: number, status: string, pdfGenerated?: string): Promise<Document> {
     if (!documentId) throw new Error("Document ID required");
     if (!status) throw new Error("Status required");
 

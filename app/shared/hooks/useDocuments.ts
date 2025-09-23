@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useUser } from './useUser';
 
 export interface Document {
-    id: string;
+    id: number;
     title: string;
     status: string;
     created_at: string;

@@ -1,4 +1,4 @@
-export async function sendInvite(email: string, documentId: string, recipientId: string) {
+export async function sendInvite(email: string, documentId: number, recipientId: number) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
     const link = `${baseUrl}/page/sign/${recipientId}?doc=${documentId}`;
 

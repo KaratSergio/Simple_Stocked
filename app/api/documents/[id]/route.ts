@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as documentController from "@/server/controllers/document.controller";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: number } }) {
     try {
         const id = params.id;
         if (!id) return NextResponse.json({ error: "Document ID required" }, { status: 400 });

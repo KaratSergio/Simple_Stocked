@@ -6,8 +6,8 @@ import { generatePdf } from "../utils/pdfGenerator";
 import { uploadPdf } from "../utils/s3Storage";
 
 export async function addSignature(
-    documentId: string,
-    recipientId: string,
+    documentId: number,
+    recipientId: number,
     signatureData: string
 ): Promise<Signature> {
     console.log("[addSignature] called", { documentId, recipientId });
@@ -36,18 +36,6 @@ export async function addSignature(
         );
     }
 
-    // if (Array.isArray(updatedValues.recipients)) {
-    //     updatedValues.recipients = updatedValues.recipients.map((r: any) => {
-    //         const match = r.id.toString() === recipientId.toString();
-    //         if (match) {
-    //             console.log("[addSignature] Matching recipient:", r);
-    //         }
-    //         return match
-    //             ? { ...r, signature: signatureData, signed_at: new Date().toISOString() }
-    //             : r;
-    //     });
-    // }
-
     console.log("[addSignature] After update:", JSON.stringify(updatedValues.recipients, null, 2));
 
     // 4. Берём шаблон
@@ -58,8 +46,8 @@ export async function addSignature(
     const pdfBytes = await generatePdf(template.json_schema, updatedValues, template.pdf_base);
 
     // 6. Загружаем в S3
-    const oldUrl = doc.pdf_generated;
-    const key = oldUrl?.replace(
+    const oldUrl = doc.pdf_generated ?? "";
+    const key = oldUrl.replace(
         `https://${process.env.S3_BUCKET}.r2.cloudflarestorage.com/`,
         ""
     );
@@ -75,13 +63,13 @@ export async function addSignature(
     }
 
     // 8. Обновляем документ
-    await documentRepo.updateDocumentStatus(documentId, newStatus, pdfUrl, updatedValues);
+    await documentRepo.updateDocument(documentId, newStatus, pdfUrl, updatedValues);
 
     return signature;
 }
 
 
-export async function listSignatures(documentId: string): Promise<Signature[]> {
+export async function listSignatures(documentId: number): Promise<Signature[]> {
     if (!documentId) throw new Error("Document ID is required");
     return signatureRepo.listSignaturesByDocument(documentId);
 }

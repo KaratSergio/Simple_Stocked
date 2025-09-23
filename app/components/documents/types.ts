@@ -2,7 +2,7 @@ import { DocumentTemplate } from "../templates/types";
 import { Recipient } from "../recipients/types";
 
 export interface Document {
-    id: string;
+    id: number;
     title: string;
     status: string;
     created_at: string;
@@ -12,13 +12,13 @@ export interface Document {
 // Documents & Lists
 // ============================
 export interface DocumentType {
-    id: string;
+    id: number;
     title: string;
     pdf_generated: string; // URL or path to generated PDF
 }
 
 export interface DocumentProps {
-    documentId: string;
+    documentId: number;
 }
 
 // ============================
@@ -37,5 +37,5 @@ export interface DocumentValues {
 export interface DynamicFormProps {
     template: DocumentTemplate;       // template to render
     values: DocumentValues;          // document fields
-    onChange: (id: string, value: FieldValue) => void; // called when a field changes
+    onChange: (id: number, value: FieldValue) => void; // called when a field changes
 }

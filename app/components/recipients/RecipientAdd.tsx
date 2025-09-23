@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Recipient } from "./types";
 
-export const RecipientAdd = ({ documentId }: { documentId: string }) => {
+export const RecipientAdd = ({ documentId }: { documentId: number }) => {
     const [recipients, setRecipients] = useState<Recipient[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -16,7 +16,7 @@ export const RecipientAdd = ({ documentId }: { documentId: string }) => {
     }, [documentId]);
 
     // Handle input change for a recipient email
-    const handleChangeEmail = (id: string, email: string) => {
+    const handleChangeEmail = (id: number, email: string) => {
         setRecipients((prev) =>
             prev.map((r) => (r.id === id ? { ...r, email } : r))
         );

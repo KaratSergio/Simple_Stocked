@@ -3,7 +3,7 @@ import { Recipient } from "../recipients/types";
 
 export const DynamicForm = ({ template, values, onChange }: DynamicFormProps) => {
 
-  const handleRecipientChange = (elId: string, index: number, field: keyof Recipient, value: string) => {
+  const handleRecipientChange = (elId: number, index: number, field: keyof Recipient, value: string) => {
     const updated = [...(values[elId] as Recipient[] || [])];
     updated[index] = { ...updated[index], [field]: value };
     onChange(elId, updated);

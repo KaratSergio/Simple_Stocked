@@ -56,7 +56,7 @@ export async function createDocument(
     return doc;
 }
 
-export async function getDocumentById(id: string):
+export async function getDocumentById(id: number):
     Promise<Document | null> {
     if (!id) throw new Error("Document ID is required");
     return documentRepo.getDocumentById(id);
@@ -69,12 +69,12 @@ export async function listDocumentsByOwner(ownerId: number):
 }
 
 export async function updateDocumentStatus(
-    documentId: string,
+    documentId: number,
     status: string,
     pdfGenerated?: string
 ): Promise<Document> {
     if (!documentId) throw new Error("Document ID is required");
     if (!status) throw new Error("Status is required");
 
-    return documentRepo.updateDocumentStatus(documentId, status, pdfGenerated);
+    return documentRepo.updateDocument(documentId, status, pdfGenerated);
 }

@@ -40,12 +40,12 @@ export const DocumentCreate = () => {
         if (el.type === "signature") {
           initialValues[el.id] = el.value?.length
             ? el.value.map((r): Recipient => ({
-              id: r.id || "",
+              id: r.id,
               name: r.name || "",
               email: r.email || "",
               signature: r.signature || null,
             }))
-            : [{ id: "", name: "", email: "", signature: null }];
+            : [{ id: 0, name: "", email: "", signature: null }];
         }
       });
 
@@ -54,7 +54,7 @@ export const DocumentCreate = () => {
     [templates]
   );
 
-  const handleChange = (id: string, value: FieldValue) => {
+  const handleChange = (id: number, value: FieldValue) => {
     setValues(prev => ({ ...prev, [id]: value }));
   };
 

@@ -1,5 +1,5 @@
 export interface Document {
-    id: string;
+    id: number;
     title: string;
     template_id: number;
     owner_id: number;

@@ -8,11 +8,11 @@ export const TemplateEditor = <Data extends TemplateData = TemplateData>({
 }: TemplateEditorProps<Data>): Data => {
 
     // Default textarea element
-    const defaultTextarea: TextareaElement = { id: 'textarea_1', type: 'textarea', value: '' };
+    const defaultTextarea: TextareaElement = { id: 1, type: 'textarea', value: '' };
     // Default 2 recipients
     const generateRecipients = (count: number): Recipient[] =>
         Array.from({ length: count }, (_, i) => ({
-            id: String(i + 1),
+            id: i + 1,
             name: "",
             email: "",
             signature: null,
@@ -47,7 +47,7 @@ export const TemplateEditor = <Data extends TemplateData = TemplateData>({
 
     // Use a single "signature" element as placeholder for recipients
     const signatureElement: SignatureElement = {
-        id: 'recipients',
+        id: 2,
         type: 'signature',
         pageRepeat: true,
         position: 'bottom',

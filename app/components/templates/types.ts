@@ -9,7 +9,7 @@ export type ElementType = 'textarea' | 'signature';
 
 // Base document element
 export interface DocumentElement {
-    id: string;       // Unique ID for frontend/editor usage
+    id: number;       // Unique ID for frontend/editor usage
     type: ElementType;
 }
 
